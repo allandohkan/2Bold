@@ -1,3 +1,4 @@
+/* Pages */
 import React, { useState } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -5,6 +6,15 @@ import Home from './components/Home';
 import AboutUs from './components/AboutUs';
 import Products from './components/Products';
 import Contacts from './components/Contacts';
+
+/* CSS */
+import './styles/Header.css';
+import './styles/Footer.css';
+import './styles/Home.css';
+import './styles/AboutUs.css';
+import './styles/Products.css';
+import './styles/Contacts.css';
+import './styles/global.css';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
