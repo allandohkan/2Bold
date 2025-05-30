@@ -1,19 +1,19 @@
 /* Pages */
 import React, { useState } from 'react';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Home from './components/Home';
-import AboutUs from './components/AboutUs';
-import Products from './components/Products';
-import Contacts from './components/Contacts';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import Home from './components/Home/Home';
+import AboutUs from './components/AboutUs/AboutUs';
+import Products from './components/Products/Products';
+import Contacts from './components/Contacts/Contacts';
 
 /* CSS */
-import './styles/Header.css';
-import './styles/Footer.css';
-import './styles/Home.css';
-import './styles/AboutUs.css';
-import './styles/Products.css';
-import './styles/Contacts.css';
+import './components/Header/Header.css';
+import './components/Footer/Footer.css';
+import './components/Home/Home.css';
+import './components/AboutUs/AboutUs.css';
+import './components/Products/Products.css';
+import './components/Contacts/Contacts.css';
 import './styles/global.css';
 
 const App = () => {
