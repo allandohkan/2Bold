@@ -26,10 +26,18 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 
-body {
-	margin: 0;
-	line-height: 1;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+	font-family: 'Roboto', sans-serif;
 }
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
 
 ol, ul {
 	list-style: none;
