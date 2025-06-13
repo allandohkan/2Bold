@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.scss';
 import iconColor from '../../assets/icons/icon-color.png'
 
@@ -26,16 +26,16 @@ const Footer = () => {
           <div className="footer-center">
             <h3 className="footer-title">Bem Especial</h3>
             <ul className="footer-links">
-              <li><a href="#vouchers">Meus Vouchers</a></li>
-              <li><a href="#resgates">Resgates</a></li>
-              <li><a href="#pontos">Meus Pontos</a></li>
+              <li><Link To="/vouchers">Meus Vouchers</Link></li>
+              <li><Link To="/resgates">Resgates</Link></li>
+              <li><Link To="/pontos">Meus Pontos</Link></li>
             </ul>
           </div>
 
           <div className="footer-right">
             <h3 className="footer-title">Contato</h3>
             <ul className="footer-links">
-              <li><a href="#privacidade">Portal da Privacidade</a></li>
+              <li><Link To="/privacidade">Portal da Privacidade</Link></li>
             </ul>
           </div>
         </div>

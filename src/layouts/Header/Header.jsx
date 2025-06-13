@@ -1,8 +1,13 @@
-import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Header.scss';
 import logoIcon from '../../assets/icons/logo.png';
 
-const Header = ({ currentPage, setCurrentPage }) => {
+const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocaltion();
+
+  const isActive = (path) => location.pathname === path;
+
   return (
     <header className="bem-especial-header">
       <div className="header-container">
@@ -13,22 +18,22 @@ const Header = ({ currentPage, setCurrentPage }) => {
 
           <nav className="main-nav hidden md:flex">
             <button 
-              onClick={() => setCurrentPage('pontos')}
-              className={`nav-button nav-button-primary ${currentPage === 'pontos' ? 'active' : ''}`}
+              onClick={() => navigate('/pontos')}
+              className={`nav-button nav-button-primary ${isActive('/pontos') ? 'active' : ''}`}
             >
               Meus Pontos
             </button>
             
             <button 
-              onClick={() => setCurrentPage('resgatar')}
-              className={`nav-button nav-button-secondary ${currentPage === 'resgatar' ? 'active' : ''}`}
+              onClick={() => navigate('/resgatar')}
+              className={`nav-button nav-button-secondary ${isActive ('/resgatar') ? 'active' : ''}`}
             >
               Quero Resgatar
             </button>
             
             <button 
-              onClick={() => setCurrentPage('vouchers')}
-              className={`nav-button nav-button-secondary ${currentPage === 'vouchers' ? 'active' : ''}`}
+              onClick={() => navigate('/vouchers')}
+              className={`nav-button nav-button-secondary ${isActive ('/vouchers') ? 'active' : ''}`}
             >
               Meus Vouchers
             </button>
