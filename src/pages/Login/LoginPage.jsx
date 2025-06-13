@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import './LoginPage.css';
+import './LoginPage.scss';
 
 import BemEspecialLoginDesktopLogo from '../../assets/images/Login_Desktop_Logo.png';
 import BemEspecialLogin from '../../assets/images/Login_Desktop.png';

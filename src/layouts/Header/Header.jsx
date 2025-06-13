@@ -1,5 +1,5 @@
 import React from 'react';
-import './Header.css';
+import './Header.scss';
 import logoIcon from '../../assets/icons/logo.png';
 
 const Header = ({ currentPage, setCurrentPage }) => {

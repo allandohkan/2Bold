@@ -11,14 +11,14 @@ import ProductsTable from './pages/Products/ProductsTable';
 import BemEspecialLogin from './pages/Login/LoginPage';
 
 /* CSS */
-import './layouts/Header/Header.css';
-import './layouts/Footer/Footer.css';
-import './pages/Home/Home.css';
-import './pages/AboutUs/AboutUs.css';
-import './pages/Products/Products.css';
-import './pages/Products/ProductsTable.css';
-import './pages/Login/LoginPage.css';
-import './styles/global.css';
+import './layouts/Header/Header.scss';
+import './layouts/Footer/Footer.scss';
+import './pages/Home/Home.scss';
+import './pages/AboutUs/AboutUs.scss';
+import './pages/Products/Products.scss';
+import './pages/Products/ProductsTable.scss';
+import './pages/Login/LoginPage.scss';
+import './styles/global.scss';
 import './App.css';
 
 const App = () => {
