@@ -128,7 +128,7 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
     return (
       <div className="login-container login-container--home">
         <div className="login-card login-card--home">
-          <div className="logo-section">
+          <div className="logo-login-section">
             <h1 className="logo-text">
               BEM<br />ESPECIAL
             </h1>
@@ -153,7 +153,7 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
     >
       <div className="login-overlay">
         <div className="login-card">
-          <div className="logo-section">
+          <div className="logo-login-section">
             <img 
               src={BemEspecialLoginDesktopLogo} 
               alt="Bem Especial Logo" 
