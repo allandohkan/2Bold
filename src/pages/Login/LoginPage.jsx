@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import CPFValidation from '../../components/Login/CPFValidation.jsx';
+import PasswordValidation from '../../components/Login/PasswordValidation.jsx';
+import SecurityCodeForm from '../../components/Login/SecutiryCodeForm.jsx';
 import { Eye, EyeOff } from 'lucide-react';
 import './LoginPage.scss';
 
@@ -7,50 +10,104 @@ import BemEspecialLogin from '../../assets/images/Login_Desktop.png';
 import BemEspecialLoginSenha from '../../assets/images/Login_Desktop_Senha.png';
 import BemEspecialLoginSenhaInvalida from '../../assets/images/Login_Desktop_Senha_Invalida.png';
 
-const BemEspecialLoginComponent = () => {
+const BemEspecialLoginComponent = ({ onLogin }) => {
   const [currentStep, setCurrentStep] = useState('cpf');
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [securityCode, setSecurityCode] = useState(['', '', '', '', '', '']);
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const formatCPF = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  const handleCPFAdvance = () => {
+    setCurrentStep('password');
   };
 
-  const handleCPFChange = (e) => {
-    const formatted = formatCPF(e.target.value);
-    if (formatted.length <= 14) {
-      setCpf(formatted);
+
+  const handleSecurityCodeValidation = async (code) => {
+    setIsLoading(true);
+    try {
+      // Aqui você fará a chamada para a API para validar o código
+      // const response = await validateSecurityCode(code, email);
+      
+      // Simula validação por enquanto
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Se chegou até aqui, código está correto
+      alert('Código verificado com sucesso!');
+      setCurrentStep('resetPassword');
+    } catch (error) {
+      // O componente SecurityCodeForm já lida com o erro
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSecurityCodeChange = (index, value) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newCode = [...securityCode];
-      newCode[index] = value;
-      setSecurityCode(newCode);
+  // Função para reenviar código de segurança
+  const handleResendSecurityCode = async (email) => {
+    try {
+      // chamada para a API para reenviar o código
+      // const response = await resendSecurityCode(email);
       
-      if (value && index < 5) {
-        const nextInput = document.getElementById(`code-${index + 1}`);
-        nextInput?.focus();
-      }
+      // Simula envio por enquanto
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Novo código enviado para seu e-mail!');
+    } catch (error) {
+      throw new Error('Erro ao reenviar código');
     }
   };
 
   const handleAdvance = () => {
-    if (currentStep === 'cpf' && cpf.length === 14) {
-      setCurrentStep('password');
-    } else if (currentStep === 'password' && password) {
-      setCurrentStep('home');
-    } else if (currentStep === 'resetPassword' && newPassword && confirmPassword) {
-      setCurrentStep('password');
-    } else if (currentStep === 'securityCode' && securityCode.every(digit => digit)) {
-      setCurrentStep('resetPassword');
+    if (currentStep === 'password' && password) {
+      if (onLogin) {
+        const loginSuccess = onLogin(cpf, password);
+        if (loginSuccess) {
+          setCurrentStep('home');
+        } else {
+          alert('Credenciais inválidas!');
+        }
+      } else {
+        setCurrentStep('home');
+      }
+    } else if (currentStep === 'forgotPassword') {
+      handleForgotPassword();
+    }
+  };
+
+  const handlePasswordCreate = () => {
+    alert('Senha criada com sucesso! Agora faça login.');
+    setCurrentStep('password');
+    setPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
+
+  const handlePasswordReset = () => {
+    // resetar a senha via API
+    alert('Senha alterada com sucesso! Agora faça login.');
+    setCurrentStep('password');
+    setPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
+  const handleForgotPassword = async () => {
+    setIsLoading(true);
+    try {
+      // chamada para a API para enviar código por email
+      // const response = await sendSecurityCode(email);
+      
+      // Simula envio por enquanto
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      alert('Código de segurança enviado para seu e-mail!');
+      setCurrentStep('securityCode');
+    } catch (error) {
+      alert('Erro ao enviar código. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,9 +116,7 @@ const BemEspecialLoginComponent = () => {
       case 'cpf':
         return BemEspecialLogin;
       case 'password':
-        return BemEspecialLoginSenha;
       case 'resetPassword':
-        return BemEspecialLoginSenha;
       case 'securityCode':
         return BemEspecialLoginSenha;
       default:
@@ -71,8 +126,8 @@ const BemEspecialLoginComponent = () => {
 
   if (currentStep === 'home') {
     return (
-      <div className="login-container home-background">
-        <div className="login-card home-card">
+      <div className="login-container login-container--home">
+        <div className="login-card login-card--home">
           <div className="logo-section">
             <h1 className="logo-text">
               BEM<br />ESPECIAL
@@ -92,86 +147,62 @@ const BemEspecialLoginComponent = () => {
   }
 
   return (
-    <div className="login-container" style={{ backgroundImage: `url(${getBackgroundImage()})` }}>
+    <div 
+      className="login-container" 
+      style={{ backgroundImage: `url(${getBackgroundImage()})` }}
+    >
       <div className="login-overlay">
         <div className="login-card">
           <div className="logo-section">
-            <img src={BemEspecialLoginDesktopLogo} alt="Bem Especial Logo" className="logo-image" />
-            
+            <img 
+              src={BemEspecialLoginDesktopLogo} 
+              alt="Bem Especial Logo" 
+              className="logo-image" 
+            />
           </div>
 
           {currentStep === 'cpf' && (
-            <div className="form-section">
-              <div className="form-description">
-                <p>
-                  Insira o CPF cadastrado<br />
-                  para resgatar seus benefícios.
-                </p>
-              </div>
-              
-              <div className="input-group">
-                <input
-                  type="text"
-                  placeholder="Insira CPF aqui"
-                  value={cpf}
-                  onChange={handleCPFChange}
-                  className="input-field"
-                />
-              </div>
-
-              <button
-                onClick={handleAdvance}
-                disabled={cpf.length !== 14}
-                className="btn-primary"
-              >
-                AVANÇAR
-              </button>
-
+            <>
+              <CPFValidation 
+                cpf={cpf} 
+                setCpf={setCpf} 
+                onAdvance={handleCPFAdvance}
+              />
               <div className="form-footer">
                 <button className="link-button">Voltar</button>
                 <button 
-                  onClick={() => setCurrentStep('resetPassword')}
+                  onClick={() => setCurrentStep('createPassword')}
                   className="link-button"
                 >
                   Fazer cadastro
                 </button>
               </div>
-            </div>
+            </>
           )}
 
           {currentStep === 'password' && (
             <div className="form-section">
               <div className="form-description">
-                <p>
-                  Notamos que você não cadastrou<br />
-                  uma senha para acessar o sistema.<br />
-                  Crie uma senha e confirme.
-                </p>
+                <p>Digite sua senha para continuar</p>
               </div>
 
               <div className="input-group">
-                <div className="password-input-wrapper">
+                <div className="password-input">
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Insira Senha aqui"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="input-field password-input"
+                    className="password-input__field"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="password-toggle"
+                    className="password-input__toggle"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
-                
-                <input
-                  type="password"
-                  placeholder="Confirme Senha aqui"
-                  className="input-field"
-                />
               </div>
 
               <button
@@ -179,107 +210,94 @@ const BemEspecialLoginComponent = () => {
                 disabled={!password}
                 className="btn-primary"
               >
-                AVANÇAR
+                ENTRAR
               </button>
 
-              <div className="password-requirements">
-                <p className="requirements-title">A senha deve conter:</p>
-                <ul className="requirements-list">
-                  <li>• Mínimo de 6 caracteres</li>
-                  <li>• Uma Letra minúscula</li>
-                  <li>• Uma Letra maiúscula</li>
-                  <li>• Número</li>
-                  <li>• Caracter especial</li>
-                </ul>
+              <div className="form-footer">
+                <button 
+                  onClick={() => setCurrentStep('forgotPassword')}
+                  className="link-button"
+                >
+                  Esqueci minha senha
+                </button>
               </div>
             </div>
           )}
 
+          {currentStep === 'createPassword' && (
+            <PasswordValidation
+              password={newPassword}
+              setPassword={setNewPassword}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              onAdvance={handlePasswordCreate}
+              title="Notamos que você não cadastrou uma senha para acessar o sistema. Crie uma senha e confirme."
+              showConfirmation={true}
+            />
+          )}
+
           {currentStep === 'resetPassword' && (
+            <PasswordValidation
+              password={newPassword}
+              setPassword={setNewPassword}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              onAdvance={handlePasswordReset}
+              title="Crie uma nova senha para sua conta."
+              showConfirmation={true}
+            />
+          )}
+
+          {currentStep === 'forgotPassword' && (
             <div className="form-section">
               <div className="form-description">
                 <p>
-                  Notamos que você não cadastrou<br />
-                  uma senha para acessar o sistema.<br />
-                  Crie uma senha e confirme.
+                  Para recuperar sua senha, enviaremos um código<br />
+                  de segurança para seu e-mail cadastrado.
                 </p>
               </div>
 
               <div className="input-group">
                 <input
-                  type="password"
-                  placeholder="Insira Senha aqui"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="input-field"
-                />
-                
-                <input
-                  type="password"
-                  placeholder="Confirme Senha aqui"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type="email"
+                  placeholder="Confirme seu e-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="input-field"
                 />
               </div>
 
               <button
                 onClick={handleAdvance}
-                disabled={!newPassword || !confirmPassword}
+                disabled={!email || isLoading}
                 className="btn-primary"
               >
-                AVANÇAR
+                {isLoading ? 'ENVIANDO...' : 'ENVIAR CÓDIGO'}
               </button>
 
-              <div className="password-requirements">
-                <p className="requirements-title">A senha deve conter:</p>
-                <ul className="requirements-list">
-                  <li>• Mínimo de 6 caracteres</li>
-                  <li>• Uma Letra minúscula</li>
-                  <li>• Uma Letra maiúscula</li>
-                  <li>• Número</li>
-                  <li>• Caracter especial</li>
-                </ul>
+              <div className="form-footer">
+                <button 
+                  onClick={() => setCurrentStep('cpf')}
+                  className="link-button"
+                >
+                  Voltar ao login
+                </button>
               </div>
             </div>
           )}
 
           {currentStep === 'securityCode' && (
-            <div className="form-section">
-              <div className="form-description">
-                <p>
-                  Por medida de segurança, enviamos no seu<br />
-                  e-mail um código de 6 dígitos. Por favor, acesse<br />
-                  o seu e-mail e insira o código no espaço abaixo.
-                </p>
-              </div>
-
-              <div className="security-code-container">
-                {securityCode.map((digit, index) => (
-                  <input
-                    key={index}
-                    id={`code-${index}`}
-                    type="text"
-                    maxLength="1"
-                    value={digit}
-                    onChange={(e) => handleSecurityCodeChange(index, e.target.value)}
-                    className="security-code-input"
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={handleAdvance}
-                disabled={!securityCode.every(digit => digit)}
-                className="btn-primary"
-              >
-                AVANÇAR
-              </button>
-            </div>
+            <SecurityCodeForm
+              onAdvance={handleSecurityCodeValidation}
+              onResendCode={handleResendSecurityCode}
+              onBack={() => setCurrentStep('forgotPassword')}
+              email={email}
+              isLoading={isLoading}
+            />
           )}
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
   );
 };
 

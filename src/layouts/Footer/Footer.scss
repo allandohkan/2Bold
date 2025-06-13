@@ -1,5 +1,7 @@
+@import '../../styles/variables.scss';
+
 .bem-especial-footer {
-  background-color: var(--cor-lilas);
+  background-color: $color-purple;
   color: white;
   padding: 3rem 0 2rem;
   margin-top: auto;

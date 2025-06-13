@@ -1,3 +1,5 @@
+@import '../../styles/variables.scss';
+
 /* Header Principal */
 .bem-especial-header {
   font-family: roboto;
@@ -44,7 +46,7 @@
 }
 
 .nav-button-primary {
-  background-color: var(--cor-rosa);
+  background-color: $color-pink;
   color: white;
   padding: 10px 28px 10px 28px;
   border-radius: 4px;
@@ -60,7 +62,7 @@
 }
 
 .nav-button-secondary:hover {
-  color: var(--cor-rosa);
+  color: $color-pink;
 }
 
 .user-section {
@@ -75,12 +77,12 @@
 
 .greeting-text {
   font-size: 0.875rem;
-  color: var(--cor-rosa);
+  color: $color-pink;
   font-weight: 500;
 }
 
 .points-display {
-    background-color: var(--cor-rosa);
+    background-color: $color-pink;
     color: white;
     padding: 4px 32px 4px 32px;
     border-radius: 4px;
@@ -113,5 +115,5 @@
 }
 
 .exit-button:hover {
-  color: var(--cor-rosa);
+  color: $color-pink;
 }
