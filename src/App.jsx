@@ -22,7 +22,14 @@ import './styles/global.scss';
 import './App.css';
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // MODO DESENVOLVIMENTO - mude para false quando quiser testar a autenticação
+  const DEV_MODE = true;
+  
+  const [isAuthenticated, setIsAuthenticated] = useState(DEV_MODE);
+
+  console.log('DEV_MODE:', DEV_MODE);
+  console.log('isAuthenticated:', isAuthenticated);
+  console.log('Deveria mostrar header/footer?', (DEV_MODE || isAuthenticated));
 
   const handleLogin = (cpf, password) => {
     const validCredentials = [
@@ -47,34 +54,51 @@ const App = () => {
   };
 
   const PrivateRoute = ({ element }) => {
-    return isAuthenticated ? element : <Navigate to="/" replace />;
+    return isAuthenticated ? element : <Navigate to="/login" replace />;
   };
 
   return (
     <BrowserRouter>
-      {isAuthenticated && <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />}
+      {/* Header sempre visível no modo dev, ou quando autenticado */}
+      {(DEV_MODE || isAuthenticated) && (
+        <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+      )}
 
       <main className="main-content">
         <Routes>
+          {/* Home sempre acessível */}
+          <Route path="/" element={<Home />} />
+          
+          {/* Login */}
           <Route 
-            path="/" 
+            path="/login" 
             element={
               isAuthenticated 
-                ? <Navigate to="/home" replace /> 
+                ? <Navigate to="/" replace /> 
                 : <BemEspecialLogin onLogin={handleLogin} />
             } 
-            
           />
-          <Route path="/home" element={<PrivateRoute element={<Home />} />} />
-          <Route path="/about" element={<PrivateRoute element={<AboutUs />} />} />
-          <Route path="/products" element={<PrivateRoute element={<Products />} />} />
-          <Route path="/products-table" element={<PrivateRoute element={<ProductsTable />} />} />
           
-          <Route path="*" element={<Navigate to={isAuthenticated ? "/home" : "/"} replace />} />
+          {/* Rotas que no futuro serão privadas, mas no dev mode são públicas */}
+          <Route 
+            path="/about" 
+            element={DEV_MODE ? <AboutUs /> : <PrivateRoute element={<AboutUs />} />} 
+          />
+          <Route 
+            path="/products" 
+            element={DEV_MODE ? <Products /> : <PrivateRoute element={<Products />} />} 
+          />
+          <Route 
+            path="/products-table" 
+            element={DEV_MODE ? <ProductsTable /> : <PrivateRoute element={<ProductsTable />} />} 
+          />
+          
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
-      {isAuthenticated && <Footer />}
+      {/* Footer sempre visível no modo dev, ou quando autenticado */}
+      {(DEV_MODE || isAuthenticated) && <Footer />}
     </BrowserRouter>
   );
 };

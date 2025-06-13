@@ -4,7 +4,7 @@ import logoIcon from '../../assets/icons/logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
-  const location = useLocaltion();
+  const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
 
