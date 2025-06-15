@@ -7,7 +7,7 @@ import Footer from './layouts/Footer/Footer';
 import Home from './pages/Home/Home';
 import AboutUs from './pages/AboutUs/AboutUs';
 import Products from './pages/Products/Products';
-import ProductsTable from './pages/Products/ProductsTable';
+import ProductsTable from './components/Products/ProductsTable';
 import BemEspecialLogin from './pages/Login/LoginPage';
 
 /* CSS */
@@ -16,7 +16,7 @@ import './layouts/Footer/Footer.scss';
 import './pages/Home/Home.scss';
 import './pages/AboutUs/AboutUs.scss';
 import './pages/Products/Products.scss';
-import './pages/Products/ProductsTable.scss';
+import './styles/Banner.scss';
 import './pages/Login/LoginPage.scss';
 import './styles/global.scss';
 import './App.css';
