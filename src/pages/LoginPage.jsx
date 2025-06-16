@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import CPFValidation from '../../components/Login/CPFValidation.jsx';
-import PasswordValidation from '../../components/Login/PasswordValidation.jsx';
-import SecurityCodeForm from '../../components/Login/SecutiryCodeForm.jsx';
+import CPFValidation from '../components/Login/CPFValidation.jsx';
+import PasswordValidation from '../components/Login/PasswordValidation.jsx';
+import SecurityCodeForm from '../components/Login/SecutiryCodeForm.jsx';
 import { Eye, EyeOff } from 'lucide-react';
-import './LoginPage.scss';
+import '../styles/login.scss'
 
-import BemEspecialLoginDesktopLogo from '../../assets/images/Login_Desktop_Logo.png';
-import BemEspecialLogin from '../../assets/images/Login_Desktop.png';
-import BemEspecialLoginSenha from '../../assets/images/Login_Desktop_Senha.png';
-import BemEspecialLoginSenhaInvalida from '../../assets/images/Login_Desktop_Senha_Invalida.png';
+import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
+import BemEspecialLogin from '../assets/images/Login_Desktop.png';
+import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
+import BemEspecialLoginSenhaInvalida from '../assets/images/Login_Desktop_Senha_Invalida.png';
 
 const BemEspecialLoginComponent = ({ onLogin }) => {
   const [currentStep, setCurrentStep] = useState('cpf');

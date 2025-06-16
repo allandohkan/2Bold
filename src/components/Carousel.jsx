@@ -6,6 +6,7 @@ import 'slick-carousel/slick/slick-theme.css';
 const Carousel = ({  children }) => {
   const settings = {
     dots: true,
+    arrows: false,
     infinite: false,
     speed: 500,
     slidesToShow: 1, 

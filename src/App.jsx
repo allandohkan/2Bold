@@ -2,16 +2,11 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 /* Pages */
-import Home from './pages/Home/Home';
-import AboutUs from './pages/AboutUs/AboutUs';
-import Products from './pages/Products/Products';
-import BemEspecialLogin from './pages/Login/LoginPage';
+import Home from './pages/Home';
+import AboutUs from './pages/AboutUs';
+import Products from './pages/MeusPontos';
+import BemEspecialLogin from './pages/LoginPage';
 
-/* CSS */
-import './pages/Home/Home.scss';
-import './pages/AboutUs/AboutUs.scss';
-import './pages/Products/Products.scss';
-import './pages/Login/LoginPage.scss';
 import './styles/global.scss';
 import './App.css';
 
@@ -62,7 +57,7 @@ const App = () => {
             element={DEV_MODE ? <AboutUs /> : <PrivateRoute element={<AboutUs />} />} 
           />
           <Route 
-            path="/products" 
+            path="/my-points" 
             element={DEV_MODE ? <Products /> : <PrivateRoute element={<Products />} />} 
           />
           <Route path="*" element={<Navigate to="/" replace />} />

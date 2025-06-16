@@ -1,7 +1,7 @@
-import Carousel from '../../components/Carousel';
-import Footer from '../../layouts/Footer/Footer';
-import Header from '../../layouts/Header/Header';
-import CarouselImage from '../../../src/assets/images/mainbanner.png'
+import Carousel from '../components/Carousel';
+import Footer from '../layouts/Footer/Footer';
+import Header from '../layouts/Header/Header';
+import CarouselImage from '../../src/assets/images/mainbanner.png'
 
 const Home = () => {
   return (
