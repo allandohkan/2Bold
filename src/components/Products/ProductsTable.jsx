@@ -34,6 +34,8 @@ const ProductsTable = () => {
   }, []);
 
     return (
+      <div class="points-table-container">
+  <div class="balance-box">Seu saldo total: <strong>999.999 pts</strong></div>
   <table className='product-table'>
     <thead>
         <th>Troca</th>
@@ -54,6 +56,7 @@ const ProductsTable = () => {
         ))}
     </tbody>
   </table>
+  </div>
     );
 }
 

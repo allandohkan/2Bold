@@ -1,3 +1,5 @@
+@use '../styles/variables' as *;
+
 .h2 {
     font-size: 300px;
 }
@@ -15,4 +17,89 @@ table.product-table {
     margin: auto;
     text-align: center;
     margin-top: 50px;
+}
+
+.points-table-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 50px auto;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .balance-box {
+    background-color: $color-pink;
+    color: white;
+    font-weight: 400;
+    font-size: 1.325rem;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+
+    strong{
+        font-weight: 700;
+        font-size: 2.25rem;
+    }
+  }
+
+  table {
+        width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+
+    thead {
+      text-align: center;
+
+      th {
+        text-align: center;
+        padding: 1.5rem 1rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #555;
+        border-bottom: 1px solid $color-pink;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $color-pink;
+
+
+        td {
+          padding: 1.5rem 1rem;
+          font-size: 1.125rem;
+          color: #333;
+        }
+      }
+    }
+  }
+
+  .pagination-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+
+    span {
+      width: 10px;
+      height: 10px;
+      background-color: #ccc;
+      border-radius: 50%;
+      margin: 0 4px;
+      transition: background-color 0.3s;
+
+      &.active {
+        background-color: #ea4ea1;
+      }
+    }
+  }
 }
