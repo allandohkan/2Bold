@@ -1,3 +1,18 @@
 .h2 {
     font-size: 300px;
 }
+
+.product-table td{
+    padding: 0 15px;
+}
+.product-table tr{
+    margin-bottom: 20px;
+}
+
+table.product-table {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    text-align: center;
+    margin-top: 50px;
+}

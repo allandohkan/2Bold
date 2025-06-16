@@ -7,7 +7,6 @@ import Footer from './layouts/Footer/Footer';
 import Home from './pages/Home/Home';
 import AboutUs from './pages/AboutUs/AboutUs';
 import Products from './pages/Products/Products';
-import ProductsTable from './components/Products/ProductsTable';
 import BemEspecialLogin from './pages/Login/LoginPage';
 
 /* CSS */
@@ -87,10 +86,6 @@ const App = () => {
           <Route 
             path="/products" 
             element={DEV_MODE ? <Products /> : <PrivateRoute element={<Products />} />} 
-          />
-          <Route 
-            path="/products-table" 
-            element={DEV_MODE ? <ProductsTable /> : <PrivateRoute element={<ProductsTable />} />} 
           />
           
           <Route path="*" element={<Navigate to="/" replace />} />
