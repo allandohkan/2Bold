@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import './Header.scss';
 import logoIcon from '../../assets/icons/logo.png';
 
@@ -17,26 +17,23 @@ const Header = () => {
           </div>
 
           <nav className="main-nav hidden md:flex">
-            <button 
-              onClick={() => navigate('/pontos')}
+            <Link to="/pontos" 
               className={`nav-button nav-button-primary ${isActive('/pontos') ? 'active' : ''}`}
             >
               Meus Pontos
-            </button>
+            </Link>
             
-            <button 
-              onClick={() => navigate('/resgatar')}
+            <Link to="/resgatar"
               className={`nav-button nav-button-secondary ${isActive ('/resgatar') ? 'active' : ''}`}
             >
               Quero Resgatar
-            </button>
+            </Link>
             
-            <button 
-              onClick={() => navigate('/vouchers')}
+            <Link to="/vouchers"
               className={`nav-button nav-button-secondary ${isActive ('/vouchers') ? 'active' : ''}`}
             >
               Meus Vouchers
-            </button>
+            </Link>
           </nav>
 
           <div className="user-section">

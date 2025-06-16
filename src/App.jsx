@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 /* Pages */
 import Home from './pages/Home';
-import AboutUs from './pages/AboutUs';
+import ResgatePage from './pages/ResgatePage';
 import Products from './pages/MeusPontos';
 import BemEspecialLogin from './pages/LoginPage';
 
@@ -53,12 +53,12 @@ const App = () => {
             } 
           />
           <Route 
-            path="/about" 
-            element={DEV_MODE ? <AboutUs /> : <PrivateRoute element={<AboutUs />} />} 
-          />
-          <Route 
             path="/my-points" 
             element={DEV_MODE ? <Products /> : <PrivateRoute element={<Products />} />} 
+          />
+          <Route 
+            path="/resgatar" 
+            element={DEV_MODE ? <ResgatePage /> : <PrivateRoute element={<ResgatePage />} />} 
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
