@@ -26,16 +26,16 @@ const Footer = () => {
           <div className="footer-center">
             <h3 className="footer-title">Bem Especial</h3>
             <ul className="footer-links">
-              <li><Link To="/vouchers">Meus Vouchers</Link></li>
-              <li><Link To="/resgates">Resgates</Link></li>
-              <li><Link To="/pontos">Meus Pontos</Link></li>
+              <li><Link to="/vouchers">Meus Vouchers</Link></li>
+              <li><Link to="/resgates">Resgates</Link></li>
+              <li><Link to="/pontos">Meus Pontos</Link></li>
             </ul>
           </div>
 
           <div className="footer-right">
             <h3 className="footer-title">Contato</h3>
             <ul className="footer-links">
-              <li><Link To="/privacidade">Portal da Privacidade</Link></li>
+              <li><Link to="/privacidade">Portal da Privacidade</Link></li>
             </ul>
           </div>
         </div>
