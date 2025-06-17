@@ -13,7 +13,7 @@ const Footer = () => {
               <p>podem ser alterados pelo</p>
               <p>Programa a qualquer tempo.</p>
               <p>Copyright © 2020. Todos os</p>
-              <p>direitos reservados epharma</p>
+              <p>direitos reservados epharma.</p>
             </div>
             
             <button className="footer-icon-button">
@@ -42,6 +42,6 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
+}; 
 
 export default Footer;
