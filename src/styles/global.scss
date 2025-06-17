@@ -433,25 +433,36 @@ img.bem-especial-products-table-banner-image {
 .container-resgatar-produtos {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     row-gap: 75px;
-    column-gap: 5px;
-    max-width: 1280PX;
+    column-gap: 25px;
+    max-width: 1310PX;
     margin: auto;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    padding: 0 15px;
 }
 
 .container-resgatar-produtos > .card-regastar {
-    width: calc(20% - 25px);
+    width: calc(20% - 20px);
     display: flex;
     flex-direction: column;
-    align-content: flex-start;
     align-items: flex-start;
+}
+@media(max-width: 998px){
+  .container-resgatar-produtos > .card-regastar{
+      width: calc(25% - 19px);
+  }
+}
+@media(max-width: 600px){
+  .container-resgatar-produtos > .card-regastar {
+        width: calc(50% - 13px);
+    }
 }
 
 .product-image {
     width: 100%;
-    border: 1px solid #8D4B91;
-    margin-bottom: 15px;
+    border: 1px solid $color-purple;
+    margin-bottom: 17px;
     aspect-ratio: 1;
     display: flex;
     justify-content: center;
@@ -466,29 +477,41 @@ img.bem-especial-products-table-banner-image {
 
 p.quero-resgatar-descricao {
     font-weight: 400;
-    font-size: 14px;
-    margin: 0px 0px 12px 0px;
+    font-size: 12px;
+    margin: 0px 0px 20px 0px;
 }
 
 h2.quero-resgatar-produtos {
     font-weight: 600;
-    font-size: 22px;
-    margin: 4px 0px 4px -1px;
+    font-size: 16px;
+    margin: 0 0 14px 0;
+    text-transform: capitalize;
 }
 
 h2.quero-resgatar-points {
     font-weight: 700;
-    font-size: 24px;
+    font-size: 19px;
     color: $color-pink;
-
+    margin-bottom: 7px;
 }
-
 button#quero-resgatar-button {
-    padding: 10px 30px;
+    padding: 8px 22px;
     background-color: $color-pink;
     border: unset;
     color: white;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 900;
     border-radius: 4px;
+    align-items: flex-start;
+    margin-top: auto;
+}
+
+.loading-text{
+    font-weight: 700;
+    font-size: 19px;
+    color: $color-pink;
+    margin-bottom: 50px;
+    text-align: center;
+    text-transform: capitalize;
+    width: 100%;
 }

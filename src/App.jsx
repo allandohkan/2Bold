@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import ResgatePage from './pages/ResgatePage';
 import Products from './pages/MeusPontos';
 import BemEspecialLogin from './pages/LoginPage';
+import SingleProduct from './pages/SingleProduct';
 
 import './styles/global.scss';
 import './App.css';
@@ -56,6 +57,7 @@ const App = () => {
             path="/my-points" 
             element={DEV_MODE ? <Products /> : <PrivateRoute element={<Products />} />} 
           />
+          <Route path="/produto/:nome" element={<SingleProduct />} />
           <Route 
             path="/resgatar" 
             element={DEV_MODE ? <ResgatePage /> : <PrivateRoute element={<ResgatePage />} />} 
