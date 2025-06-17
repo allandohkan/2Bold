@@ -15,7 +15,12 @@ const Footer = () => {
               <p>Copyright © 2020. Todos os</p>
               <p>direitos reservados epharma.</p>
             </div>
-        
+            
+            <button className="footer-icon-button">
+              <div className="icon-circle">
+                <img src={iconColor} alt="icon" className="icon" />
+              </div>
+            </button> 
           </div>
 
           <div className="footer-center">
