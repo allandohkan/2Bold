@@ -107,8 +107,8 @@ const ResgatePage = () => {
             {/* Div observada pelo IntersectionObserver */}
             <div ref={bottomRef} style={{ height: 1 }} />
 
-            {loading && <p style={{ textAlign: 'center' }} className='loading-text'>Carregando mais produtos...</p>}
-            {!hasMore && <p style={{ textAlign: 'center' }} className='loading-text'>Todos os produtos foram carregados.</p>}
+            {loading && <p className='loading-text'>Carregando mais produtos...</p>}
+            {!hasMore && <p className='loading-text'>Todos os produtos foram carregados.</p>}
         </PageContainer>
     );
 };
