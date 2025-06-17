@@ -12,43 +12,46 @@ const ResgatePage = () => {
 
                 const detailedProducts = await Promise.all(
                     data.results.map(async (pokemon) => {
-                    const res = await fetch(pokemon.url);
-                    const details = await res.json();
-                    return {
-                        name: details.name,
-                        image: details.sprites.front_default,
-                        points: details.weight * 10,
-                        description: `Experiência base: ${details.base_experience}`,
-                    };
-                })
-            );
+                        const res = await fetch(pokemon.url);
+                        const details = await res.json();
+                        return {
+                            name: details.name,
+                            image: details.sprites.front_default,
+                            points: details.weight * 10,
+                            description: `Experiência base: ${details.base_experience}`,
+                        };
+                    })
+                );
 
-            setProducts(detailedProducts);
+                setProducts(detailedProducts);
             } catch (error) {
                 console.error("Erro ao buscar produtos: ", error);
             }
         };
-        
+
         fetchProducts();
     }, []);
 
-  return (
-      <PageContainer title="Resgate">
-        {products.map((product, index) => (
-        <div className="container-resgatar-produtos">
-            <div className="card-regastar">
-                <div className="product-image">
-                    <img src={product.image} alt="{product.name}"/>
-                    <h2 className="Quero-resgatar-points">{product.points} pts</h2>
-                    <h2 className="Quero-resgatar-produtos">{product.name}</h2>
-                    <h3 className="Quero-resgatar-descricao">{product.description}</h3>
-                </div>
+    return (
+        <PageContainer title="Resgate">
+            <div className="container-resgatar-produtos">
+                {products.map((product, index) => (
+
+                    <div className="card-regastar" key={index}>
+                        <div className="product-image">
+                            <img src={product.image} alt={product.name} />
+                        </div>
+                        <div className="product-info">
+                            <h2 className="quero-resgatar-points">{product.points} pts</h2>
+                            <h2 className="quero-resgatar-produtos">{product.name}</h2>
+                            <p className="quero-resgatar-descricao">{product.description}</p>
+                        </div>
+                        <button id="quero-resgatar-button">Quero Resgatar</button>
+                    </div>
+                ))}
             </div>
-            <button id="quero-resgatar-button">Quero Resgatar</button>
-        </div>
-    ))}
-      </PageContainer>
-  );
+        </PageContainer>
+    );
 };
 
 export default ResgatePage;
