@@ -3,10 +3,10 @@ import Carousel from '../components/Carousel';
 import Footer from '../layouts/Footer/Footer';
 import Header from '../layouts/Header/Header';
 
-import CarouselImage from '../../assets/images/mainbanner.png';
-import MeusPontosImage from '../../assets/images/meuspontos.png';
-import ProdutosDisponiveisImage from '../../assets/images/produtosdisponiveis.png';
-import ResgatesImage from '../../assets/images/resgates.png';
+import CarouselImage from '../assets/images/mainbanner.png';
+import MeusPontosImage from '../assets/images/meuspontos.png';
+import ProdutosDisponiveisImage from '../assets/images/produtosdisponiveis.png';
+import ResgatesImage from '../assets/images/resgates.png';
 
 const Home = () => {
   return (
