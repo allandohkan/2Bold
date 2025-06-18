@@ -20,6 +20,7 @@ const Footer = () => {
                 <img src={iconColor} alt="icon" className="icon" />
               </div>
             </button> 
+
           </div>
 
           <div className="footer-center">
