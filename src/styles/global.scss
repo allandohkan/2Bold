@@ -29,7 +29,9 @@ img {
 button {
   font-family: $font-family-base;
 }
-
+.font-semibold{
+  font-weight: 600;
+}
 .page-content{
   max-width: 1310px;
   margin: auto;
@@ -568,4 +570,24 @@ button#quero-resgatar-button {
     text-align: center;
     text-transform: capitalize;
     width: 100%;
+}
+
+.points-acordion-container{
+  .acordion{
+    padding: 20px 0;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid $color-pink;
+  }
+  li{
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    &:last-child{
+      margin-bottom: 0;
+    }
+  }
 }

@@ -11,10 +11,15 @@
     overflow-x: auto;
     padding: 0 40px 20px 40px
 }
+@media screen and (max-width: 768px) {
+  .table-div{
+    padding: 0 15px;
+  }
+}
 .points-table-container {
   @include mix.container;
   margin: vars.$spacing-lg auto;
-  padding: 0 15px;
+  padding: 0px;
 
   h2 {
     font-size: vars.$font-size-large;
@@ -52,7 +57,7 @@
         padding: vars.$spacing-md vars.$spacing-sm;
         font-size: 1.125rem;
         font-weight: vars.$font-weight-semibold;
-        color: vars.$color-text-light;
+        color: #000;
         border-bottom: 1px solid vars.$color-pink;
       }
     }

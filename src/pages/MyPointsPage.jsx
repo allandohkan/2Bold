@@ -1,4 +1,4 @@
-import ProductsTable from '../components/Products/ProductsTable.jsx';
+import ProductsTable from '../components/Products/MyPointsTable.jsx';
 import PageContainer from '../layouts/Containers/DefaultPageContainer.jsx';
 
 const MyPointsPage = () => {
