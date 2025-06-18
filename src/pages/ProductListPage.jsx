@@ -20,6 +20,7 @@ const ProductListPage = () => {
     const [products, setProducts] = useState([]);
     const [offset, setOffset] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [hasMore, setHasMore] = useState(true);
     const bottomRef = useRef();
 
@@ -53,6 +54,7 @@ const ProductListPage = () => {
             console.error("Erro ao buscar produtos:", error);
         } finally {
             setLoading(false);
+            setInitialLoading(false);
         }
     };
 
@@ -82,6 +84,22 @@ const ProductListPage = () => {
     useEffect(() => {
         if (offset !== 0) fetchProducts();
     }, [offset]);
+
+    // Componente de Loading
+    const LoadingSpinner = () => (
+        <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            <span className="ml-3 text-gray-600">Carregando produtos...</span>
+        </div>
+    );
+
+    if (initialLoading) {
+        return (
+            <PageContainer title="Quero resgatar">
+                <LoadingSpinner />
+            </PageContainer>
+        );
+    }
 
     return (
         <PageContainer title="Quero resgatar">

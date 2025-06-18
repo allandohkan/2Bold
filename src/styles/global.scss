@@ -87,16 +87,16 @@ img.bem-especial-products-table-banner-image {
     display: flex;
     justify-content: center;
     gap: 2rem;
-    padding: 2rem 1rem;
+    padding: 90px 1rem;
     flex-wrap: wrap;
 
     .card {
         background: #ffffff;
         border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        padding: 2rem 1.5rem;
+        box-shadow: 14px 15px 24px rgba(0, 0, 0, 0.2);
+        padding: 40px 58px;
         text-align: center;
-        width: 240px;
+        width: 322px;
         transition: transform 0.2s ease;
         display: flex;
         align-content: space-between;
@@ -104,18 +104,16 @@ img.bem-especial-products-table-banner-image {
         justify-content: space-between;
     }
 
-
-
     .icon img {
         width: 60px;
         height: auto;
-        margin-bottom: 1rem;
+        
     }
 
     .text p {
         margin-bottom: 1.5rem;
-        font-size: 1rem;
-        color: #333;
+        font-size: 19px;
+        color: #000;
     }
 
     .action-button {
@@ -484,7 +482,7 @@ img.bem-especial-products-table-banner-image {
 .container-resgatar-produtos {
     display: flex;
     flex-wrap: wrap;
-    row-gap: 75px;
+    row-gap: 50px;
     column-gap: 25px;
     max-width: 1310PX;
     margin: auto;
@@ -529,6 +527,7 @@ p.quero-resgatar-descricao {
     font-weight: 400;
     font-size: 12px;
     margin: 0px 0px 20px 0px;
+    color: #000;
 }
 
 h2.quero-resgatar-produtos {
@@ -536,6 +535,7 @@ h2.quero-resgatar-produtos {
     font-size: 16px;
     margin: 0 0 14px 0;
     text-transform: capitalize;
+    color: #000;
 }
 
 h2.quero-resgatar-points {
@@ -590,4 +590,10 @@ button#quero-resgatar-button {
       margin-bottom: 0;
     }
   }
+}
+.card .icon {
+  display: flex  ;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 31px;
 }

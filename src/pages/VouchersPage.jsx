@@ -4,6 +4,7 @@ import '../styles/pages/_vouchers.scss';
 
 const VouchersPage = () => {
   const [vouchers, setVouchers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,6 +24,7 @@ const VouchersPage = () => {
 
   useEffect(() => {
     const fetchVouchers = async () => {
+      setLoading(true);
       try {
         const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100');
         const data = await response.json();
@@ -44,68 +46,82 @@ const VouchersPage = () => {
         setVouchers(detailedVouchers);
       } catch (error) {
         console.error("Erro ao buscar vouchers:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchVouchers();
   }, []);
 
+  // Componente de Loading
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <span className="ml-3 text-gray-600">Carregando vouchers...</span>
+    </div>
+  );
+
   return (
     <DefaultPageContainer title="Meus Vouchers">
-      <div className="vouchers-table-container">
-        <div className="table-div overflow-x-auto">
-          {/* Tabela tradicional no desktop */}
-          <table className='vouchers-table min-w-full divide-y divide-gray-200 text-sm text-left hidden md:table' cellSpacing={0} cellPadding={0}>
-            <thead className="">
-              <tr>
-                <th className="px-4 py-2 whitespace-nowrap">Data do Resgate</th>
-                <th className="px-4 py-2 whitespace-nowrap">Loja</th>
-                <th className="px-4 py-2 whitespace-nowrap">Produto</th>
-                <th className="px-4 py-2 whitespace-nowrap">Pontos Utilizados</th>
-                <th className="px-4 py-2 whitespace-nowrap">Status</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {currentItems.map((voucher, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-2 whitespace-nowrap">{voucher.date}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{voucher.store}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{voucher.product}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{voucher.points}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{voucher.status}</td>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="vouchers-table-container">
+          <div className="table-div overflow-x-auto">
+            {/* Tabela tradicional no desktop */}
+            <table className='vouchers-table min-w-full divide-y divide-gray-200 text-sm text-left hidden md:table' cellSpacing={0} cellPadding={0}>
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 whitespace-nowrap">Data do Resgate</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Loja</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Produto</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Pontos Utilizados</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Status</th>
                 </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {currentItems.map((voucher, index) => (
+                  <tr key={index}>
+                    <td className="px-4 py-2 whitespace-nowrap">{voucher.date}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{voucher.store}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{voucher.product}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{voucher.points}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{voucher.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {/* Acordeon para mobile */}
+            <div className="points-acordion-container flex flex-col gap-2 md:hidden">
+              {currentItems.map((voucher, index) => (
+                <VouchersAccordionItem
+                  key={index}
+                  voucher={voucher}
+                  index={index}
+                />
               ))}
-            </tbody>
-          </table>
-          {/* Acordeon para mobile */}
-          <div className="points-acordion-container flex flex-col gap-2 md:hidden">
-            {currentItems.map((voucher, index) => (
-              <VouchersAccordionItem
-                key={index}
-                voucher={voucher}
-                index={index}
-              />
-            ))}
-          </div>
-          <div className="pagination flex flex-wrap gap-2 mt-4">
-            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-2 py-1 border rounded disabled:opacity-50">
-              {'<'}
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => handlePageChange(i + 1)}
-                className={`px-2 py-1 border rounded ${currentPage === i + 1 ? 'bg-purple-200 font-bold' : ''}`}
-              >
-                {i + 1}
+            </div>
+            <div className="pagination flex flex-wrap gap-2 mt-4">
+              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-2 py-1 border rounded disabled:opacity-50">
+                {'<'}
               </button>
-            ))}
-            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-2 py-1 border rounded disabled:opacity-50">
-              {'>'}
-            </button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={`px-2 py-1 border rounded ${currentPage === i + 1 ? 'bg-purple-200 font-bold' : ''}`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-2 py-1 border rounded disabled:opacity-50">
+                {'>'}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </DefaultPageContainer>
   );
 };

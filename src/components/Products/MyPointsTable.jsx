@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const MyPointsTable = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,6 +33,7 @@ const MyPointsTable = () => {
 
   useEffect(() => {
     const fetchMyPoints = async () => {
+      setLoading(true);
       try {
         const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100');
         const data = await response.json();
@@ -53,11 +55,25 @@ const MyPointsTable = () => {
         setProducts(detailedProducts);
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMyPoints();
   }, []);
+
+  // Componente de Loading
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <span className="ml-3 text-gray-600">Carregando dados...</span>
+    </div>
+  );
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="points-table-container">
