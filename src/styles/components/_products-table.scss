@@ -125,3 +125,9 @@
     }
   }
 } 
+
+@media(max-width: 768px) {
+  .balance-box strong{
+    display: block;
+  }
+}

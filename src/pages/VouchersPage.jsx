@@ -58,7 +58,7 @@ const VouchersPage = () => {
   const LoadingSpinner = () => (
     <div className="flex justify-center items-center py-12">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      <span className="ml-3 text-gray-600">Carregando vouchers...</span>
+      <span className="ml-3 text-gray-600 mt-5 mb-5">Carregando vouchers...</span>
     </div>
   );
 
@@ -71,7 +71,7 @@ const VouchersPage = () => {
           <div className="table-div overflow-x-auto">
             {/* Tabela tradicional no desktop */}
             <table className='vouchers-table min-w-full divide-y divide-gray-200 text-sm text-left hidden md:table' cellSpacing={0} cellPadding={0}>
-              <thead className="bg-gray-100">
+              <thead>
                 <tr>
                   <th className="px-4 py-2 whitespace-nowrap">Data do Resgate</th>
                   <th className="px-4 py-2 whitespace-nowrap">Loja</th>

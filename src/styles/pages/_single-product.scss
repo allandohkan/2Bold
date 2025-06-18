@@ -291,76 +291,10 @@
   }
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(212, 105, 162, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 
-.modal-content {
-  background-color: vars.$color-white;
-  border-radius: vars.$border-radius-md;
-  padding: vars.$spacing-lg;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: vars.$spacing-md;
 
-  h3 {
-    margin: 0;
-    color: vars.$color-purple;
-    font-size: vars.$font-size-large;
-  }
-}
 
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: vars.$color-gray;
-  padding: 0;
-  line-height: 1;
 
-  &:hover {
-    color: vars.$color-purple;
-  }
-}
 
-.modal-body {
-  margin-bottom: vars.$spacing-lg;
 
-  p {
-    margin: vars.$spacing-xs 0;
-    color: vars.$color-text;
-  }
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.modal-button {
-  @include mix.button-base;
-  background-color: vars.$color-purple;
-  color: vars.$color-white;
-  padding: vars.$spacing-sm vars.$spacing-lg;
-
-  &:hover {
-    background-color: color.adjust(vars.$color-purple, $lightness: -10%);
-  }
-}

@@ -16,7 +16,7 @@ import './App.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-const DEV_MODE = true;
+const DEV_MODE = false; // Mudando para false para testar autenticação
 
 const PrivateRoute = ({ element }) => {
   // TODO: Implementar lógica de autenticação
@@ -28,7 +28,7 @@ const App = () => {
 
   const handleLogin = (cpf, password) => {
     const validCredentials = [
-      { cpf: '000.000.000-00', password: 'admin' },
+      { cpf: '448.552.608-94', password: 'admin' },
       { cpf: '111.111.111-11', password: '123456' },
       { cpf: '123.456.789-00', password: 'senha123' }
     ];
@@ -44,11 +44,15 @@ const App = () => {
     return false;
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
+
   return (
     <Router>
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home onLogout={handleLogout} />} />
           <Route 
             path="/login" 
             element={

@@ -8,10 +8,10 @@ import MeusPontosImage from '../assets/images/meuspontos.png';
 import ProdutosDisponiveisImage from '../assets/images/produtosdisponiveis.png';
 import ResgatesImage from '../assets/images/resgates.png';
 
-const Home = () => {
+const Home = ({ onLogout }) => {
   return (
     <div>
-      <Header />
+      <Header onLogout={onLogout} />
       <Carousel>
         <div>
           <img src={CarouselImage} alt="Banner Bem Especial - Programa de benefícios" className="carousel-image" />

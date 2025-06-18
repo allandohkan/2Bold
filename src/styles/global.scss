@@ -597,3 +597,34 @@ button#quero-resgatar-button {
   justify-content: center;
   margin-bottom: 31px;
 }
+
+/* Slick dots custom style */
+.slick-dots {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  li {
+    margin: 0;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    button {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      border: none;
+      padding: 0;
+      transition: background 0.2s;
+      font-size: 0;
+      &:before {
+        display: none;
+      }
+    }
+    &.slick-active button {
+      background: #d46aa5;
+    }
+  }
+}

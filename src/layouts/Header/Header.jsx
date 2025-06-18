@@ -2,12 +2,19 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import logoIcon from '../../assets/icons/logo.png';
 
-const Header = () => {
+const Header = ({ onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    navigate('/login');
+  };
 
   return (
     <header className="bem-especial-header">
@@ -47,7 +54,7 @@ const Header = () => {
               <div className="points-label">VOCÊ TEM</div>
               <div className="points-value">999.999 pts</div>
             </div>
-            <button className="exit-button" onClick={() => console.log('Sair clicado')}>Sair</button>
+            <button className="exit-button" onClick={handleLogout}>Sair</button>
           </div>
 
           {/* MOBILE DRAWER */}
@@ -57,7 +64,7 @@ const Header = () => {
               <Link to="/meus-pontos" className={`nav-button ${isActive('/meus-pontos') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Meus Pontos</Link>
               <Link to="/resgatar" className={`nav-button ${isActive('/resgatar') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Quero Resgatar</Link>
               <Link to="/vouchers" className={`nav-button ${isActive('/vouchers') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Meus Vouchers</Link>
-              <button className="exit-button" onClick={() => { setMenuOpen(false); console.log('Sair clicado'); }}>Sair</button>
+              <button className="exit-button" onClick={() => { setMenuOpen(false); handleLogout(); }}>Sair</button>
             </nav>
           </div>
           {/* Overlay para fechar drawer ao clicar fora */}
