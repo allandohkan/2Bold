@@ -2,25 +2,29 @@ import { Link } from 'react-router-dom';
 import Carousel from '../components/Carousel';
 import Footer from '../layouts/Footer/Footer';
 import Header from '../layouts/Header/Header';
-import CarouselImage from '../../src/assets/images/mainbanner.png'
+
+import CarouselImage from '../../assets/images/mainbanner.png';
+import MeusPontosImage from '../../assets/images/meuspontos.png';
+import ProdutosDisponiveisImage from '../../assets/images/produtosdisponiveis.png';
+import ResgatesImage from '../../assets/images/resgates.png';
 
 const Home = () => {
   return (
     <div>
       <Header />
       <Carousel>
-        <div><img src={CarouselImage}
-          alt="Banner Bem Especial - Programa de benefícios"
-          className="carousel-image" /></div>
-          <div><img src={CarouselImage}
-          alt="Banner Bem Especial - Programa de benefícios"
-          className="carousel-image" /></div>
+        <div>
+          <img src={CarouselImage} alt="Banner Bem Especial - Programa de benefícios" className="carousel-image" />
+        </div>
+        <div>
+          <img src={CarouselImage} alt="Banner Bem Especial - Programa de benefícios" className="carousel-image" />
+        </div>
       </Carousel>
-      <main className=" page-content">
+      <main className="page-content">
         <div className="home-buttons">
           <div className="card">
             <div className="icon">
-              <img src="../../../src/assets/images/meuspontos.png" alt="" />
+              <img src={MeusPontosImage} alt="Meus Pontos" />
             </div>
             <div className="text">
               <p>Confira seu extrato de pontos</p>
@@ -29,7 +33,7 @@ const Home = () => {
           </div>
           <div className="card">
             <div className="icon">
-              <img src="../../../src/assets/images/produtosdisponiveis.png" alt="" />
+              <img src={ProdutosDisponiveisImage} alt="Produtos Disponíveis" />
             </div>
             <div className="text">
               <p>Veja os produtos disponíveis</p>
@@ -38,7 +42,7 @@ const Home = () => {
           </div>
           <div className="card">
             <div className="icon">
-              <img src="../../../src/assets/images/resgates.png" alt="" />
+              <img src={ResgatesImage} alt="Resgates" />
             </div>
             <div className="text">
               <p>Acompanhe os resgates dos seus Vouchers</p>
