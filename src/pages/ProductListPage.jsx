@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import PageContainer from '../layouts/Containers/DefaultPageContainer.jsx';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const gerarLorem = () => {
     const textos = [
         "Lorem ipsum dolor sit amet.",
@@ -18,7 +16,7 @@ const gerarLorem = () => {
 
 const ITEMS_PER_PAGE = 15;
 
-const ResgatePage = () => {
+const ProductListPage = () => {
     const [products, setProducts] = useState([]);
     const [offset, setOffset] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -81,7 +79,6 @@ const ResgatePage = () => {
         return () => observer.disconnect();
     }, [bottomRef.current, loading, hasMore]);
 
-    // Efeito de carregamento após incremento de offset
     useEffect(() => {
         if (offset !== 0) fetchProducts();
     }, [offset]);
@@ -104,7 +101,7 @@ const ResgatePage = () => {
                 ))}
             </div>
 
-            {/* Div observada pelo IntersectionObserver */}
+            {/* Referencia para o IntersectionObserver */}
             <div ref={bottomRef} style={{ height: 1 }} />
 
             {loading && <p style={{ textAlign: 'center' }} className='loading-text'>Carregando mais produtos...</p>}
@@ -113,4 +110,4 @@ const ResgatePage = () => {
     );
 };
 
-export default ResgatePage;
+export default ProductListPage; 

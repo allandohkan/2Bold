@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import DefaultPageContainer from '../layouts/Containers/DefaultPageContainer';
+import ErrorImage from '../assets/images/failed-icon.png';
+import Modal from '../components/Modal/Modal';
 
 const SingleProduct = () => {
   const { nome } = useParams();
@@ -8,9 +10,10 @@ const SingleProduct = () => {
   const [produto, setProduto] = useState(null);
   const [isRedeemed, setIsRedeemed] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   // TODO: Substituir por valor da API quando estiver pronta
   const rating = 4; // Valor temporário para demonstração
-  const userPoints = 1000; // TODO: Substituir por valor da API
+  const userPoints = 300; // TODO: Substituir por valor da API
   const productPoints = 500; // TODO: Substituir por valor da API
 
   useEffect(() => {
@@ -32,10 +35,14 @@ const SingleProduct = () => {
     if (userPoints >= productPoints) {
       setIsRedeemed(true);
     } else {
-      alert('Pontos insuficientes para resgatar este produto');
+      setShowErrorModal(true);
     }
   };
 
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
+  };
+  
   const handleCopy = () => {
     navigator.clipboard.writeText('ROCHEVOUCHER10');
     setShowCopied(true);
@@ -46,13 +53,19 @@ const SingleProduct = () => {
 
   return (
     <DefaultPageContainer title={isRedeemed ? "Transação Confirmada" : "Produtos"}>
+      <Modal
+        isOpen={showErrorModal}
+        onClose={handleCloseErrorModal}
+        message="Ops! Saldo insuficiente para essa transação"
+        image={ErrorImage}
+        buttonText="Voltar"
+      />
       <div className="single-product">
         {isRedeemed && (
           <div className="success-row">
             <div className="success-message">
               Parabéns! Sua transação foi confirmada com sucesso para a troca de pontos. Seu saldo também foi atualizado
             </div>
-            
           </div>
         )}
         <div className="product-main">
@@ -60,7 +73,7 @@ const SingleProduct = () => {
             <img src={produto.sprites.front_default} alt={produto.name} />
           </div>
           <div className="product-info">
-            <div className="points">00000 pts</div>
+            <div className="points">{productPoints} pts</div>
             <div className="product-title">{produto.name}</div>
             <div className="product-description">
               Este produto oferece desempenho superior com design inovador, garantindo praticidade e eficiência no seu dia a dia. Ideal para quem busca qualidade e resultados rápidos.

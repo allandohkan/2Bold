@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 /* Pages */
 import Home from './pages/Home';
-import ResgatePage from './pages/ResgatePage';
-import Products from './pages/MeusPontos';
 import BemEspecialLogin from './pages/LoginPage';
 import SingleProduct from './pages/SingleProduct';
+import ProductListPage from './pages/ProductListPage';
+import MyPointsPage from './pages/MyPointsPage';
+import VouchersPage from './pages/VouchersPage';
 
 import './styles/global.scss';
 import './styles/main.scss';
@@ -14,10 +15,15 @@ import './App.css';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import VouchersPage from './pages/VouchersPage';
+
+const DEV_MODE = true;
+
+const PrivateRoute = ({ element }) => {
+  // TODO: Implementar lógica de autenticação
+  return element;
+};
 
 const App = () => {
-  const DEV_MODE = true;
   const [isAuthenticated, setIsAuthenticated] = useState(DEV_MODE);
 
   const handleLogin = (cpf, password) => {
@@ -38,12 +44,8 @@ const App = () => {
     return false;
   };
 
-  const PrivateRoute = ({ element }) => {
-    return isAuthenticated ? element : <Navigate to="/login" replace />;
-  };
-
   return (
-    <BrowserRouter>
+    <Router>
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -57,7 +59,7 @@ const App = () => {
           />
           <Route 
             path="/meus-pontos" 
-            element={DEV_MODE ? <Products /> : <PrivateRoute element={<Products />} />} 
+            element={DEV_MODE ? <MyPointsPage /> : <PrivateRoute element={<MyPointsPage />} />} 
           />
           <Route 
             path="/vouchers" 
@@ -66,12 +68,12 @@ const App = () => {
           <Route path="/produto/:nome" element={<SingleProduct />} />
           <Route 
             path="/resgatar" 
-            element={DEV_MODE ? <ResgatePage /> : <PrivateRoute element={<ResgatePage />} />} 
+            element={DEV_MODE ? <ProductListPage /> : <PrivateRoute element={<ProductListPage />} />} 
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-    </BrowserRouter>
+    </Router>
   );
 };
 

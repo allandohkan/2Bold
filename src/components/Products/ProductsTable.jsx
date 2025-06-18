@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const MeusPontosTable = () => {
+const ProductsTable = () => {
   const [products, setProducts] = useState([]);
 
   // Paginação
@@ -98,4 +98,4 @@ const MeusPontosTable = () => {
   );
 }
 
-export default MeusPontosTable;
+export default ProductsTable;
