@@ -1,4 +1,4 @@
-@use './variables.scss' as *;
+@use './abstracts/variables' as vars;
 
 .login-container {
   min-height: 100vh;
@@ -113,7 +113,7 @@
 }
 
 .input-field:focus {
-  border-color: $color-pink;
+  border-color: vars.$color-pink;
 }
 
 .input-field + .input-field {
@@ -155,7 +155,7 @@
 
   &__submit {
     width: 100%;
-    background-color: $color-pink;
+    background-color: vars.$color-pink;
     color: white;
     border: none;
     border-radius: 8px;
@@ -186,7 +186,7 @@
   &__field {
     width: 100%;
     padding: 12px 48px 12px 16px;
-    border: 2px solid $color-pink;
+    border: 2px solid vars.$color-pink;
     border-radius: 4px;
     font-size: 16px;
     background-color: #fff;
@@ -279,12 +279,12 @@
 }
 
 .security-code-input:focus {
-  border-color: $color-pink;
+  border-color: vars.$color-pink;
 }
 
 .btn-primary {
   width: 100%;
-  background: $color-pink;
+  background: vars.$color-pink;
   color: white;
   padding: 1rem;
   border-radius: 0.5rem;

@@ -4,7 +4,7 @@ import PageContainer from '../layouts/Containers/DefaultPageContainer.jsx';
 const MeusPontos = () => {
 
   return (
-      <PageContainer title="Produtos">
+      <PageContainer title="Meus Pontos">
         <ProductsTable />
       </PageContainer>
   );

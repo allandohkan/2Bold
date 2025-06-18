@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import '../../styles/ProductsTable.scss';
 
 const MeusPontosTable = () => {
   const [products, setProducts] = useState([]);
@@ -52,7 +51,8 @@ const MeusPontosTable = () => {
   return (
     <div className="points-table-container">
       <div className="balance-box">Seu saldo total: <strong>999.999 pts</strong></div>
-      <table className='product-table'>
+      <div className="table-div">
+      <table className='product-table' cellSpacing={50} cellPadding={10}>
         <thead>
           <tr>
             <th>Troca</th>
@@ -75,9 +75,9 @@ const MeusPontosTable = () => {
         </tbody>
       </table>
       <div className="pagination">
-        {/*<button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-    Anterior
-  </button>*/}
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          {'<'}
+        </button>
         {Array.from({ length: totalPages }, (_, i) => (
           <button
             key={i + 1}
@@ -87,10 +87,12 @@ const MeusPontosTable = () => {
             {i + 1}
           </button>
         ))}
-        {/*<button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-    Próximo
-  </button>*/}
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+          {'>'}
+        </button>
       </div>
+      </div>
+      
 
     </div>
   );

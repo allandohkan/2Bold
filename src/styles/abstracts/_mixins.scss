@@ -1,0 +1,90 @@
+@use './variables' as vars;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin container {
+  max-width: vars.$container-max-width;
+  margin: 0 auto;
+  padding: 0 vars.$spacing-md;
+}
+
+@mixin button-base {
+  background-color: vars.$color-pink;
+  color: vars.$color-white;
+  border: none;
+  padding: vars.$spacing-xs vars.$spacing-sm;
+  border-radius: vars.$border-radius-sm;
+  cursor: pointer;
+  font-size: vars.$font-size-base;
+  transition: vars.$transition-base;
+  min-width: 100px;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #db2777, #7c3aed);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background-color: vars.$color-gray;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+@mixin input-base {
+  padding: vars.$spacing-xs;
+  border: 1px solid vars.$color-border;
+  border-radius: vars.$border-radius-sm;
+  font-size: vars.$font-size-base;
+  background-color: vars.$color-white;
+  transition: vars.$transition-base;
+
+  &:focus {
+    outline: none;
+    border-color: vars.$color-pink;
+    box-shadow: 0 0 0 3px rgba(vars.$color-pink, 0.1);
+  }
+}
+
+@mixin card-base {
+  background: vars.$color-white;
+  border-radius: vars.$border-radius-md;
+  box-shadow: vars.$shadow-md;
+  padding: vars.$spacing-md;
+}
+
+@mixin message-base {
+  padding: vars.$spacing-sm;
+  border-radius: vars.$border-radius-sm;
+  font-size: vars.$font-size-small;
+  text-align: center;
+}
+
+@mixin error-message {
+  @include message-base;
+  background: vars.$color-error-bg;
+  border: 1px solid vars.$color-error;
+  color: vars.$color-error;
+}
+
+@mixin info-message {
+  @include message-base;
+  background: vars.$color-info-bg;
+  border: 1px solid vars.$color-info;
+  color: vars.$color-info;
+} 

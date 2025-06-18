@@ -1,0 +1,285 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.login-container {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm;
+}
+
+.login-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-lg;
+  padding: 4.75rem;
+  width: 100%;
+  max-width: 43rem;
+  position: relative;
+  z-index: 10;
+}
+
+.logo-login-section {
+  text-align: center;
+  margin-bottom: $spacing-lg;
+  justify-content: space-evenly;
+}
+
+.logo-subtitle {
+  font-size: $font-size-small;
+  color: $color-text-light;
+  margin-top: $spacing-xs;
+  margin-bottom: 0;
+}
+
+.error-message {
+  @include error-message;
+  margin-bottom: $spacing-sm;
+}
+
+.login-hint {
+  @include info-message;
+  margin-top: $spacing-sm;
+}
+
+.login-hint p {
+  margin: $spacing-xs 0;
+}
+
+.login-hint strong {
+  color: $color-info;
+}
+
+.form-section {
+  width: 100%;
+}
+
+.form-description {
+  text-align: center;
+  margin-bottom: $spacing-md;
+}
+
+.form-description p {
+  font-weight: $font-weight-normal;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.input-group {
+  margin-bottom: $spacing-md;
+}
+
+.input-field {
+  width: 100%;
+  padding: $spacing-sm;
+  border: 2px solid $color-border;
+  border-radius: $border-radius-md;
+  font-size: $font-size-base;
+  text-align: center;
+  outline: none;
+  transition: $transition-base;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: $color-pink;
+  }
+
+  & + .input-field {
+    margin-top: $spacing-sm;
+  }
+}
+
+.password-validation {
+  width: 100%;
+  
+  &__description {
+    margin-bottom: $spacing-lg;
+    
+    p {
+      color: $color-text;
+      font-size: $font-size-large;
+      line-height: 1.2;
+      text-align: center;
+      margin: 0;
+    }
+  }
+
+  &__inputs {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__error {
+    margin-bottom: $spacing-sm;
+    
+    p {
+      color: $color-error;
+      font-size: $font-size-small;
+      margin: 0;
+      text-align: center;
+    }
+  }
+
+  &__submit {
+    @include button-base;
+    width: 100%;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.password-input {
+  position: relative;
+  width: 100%;
+
+  &__field {
+    @include input-base;
+    padding-right: 3rem;
+  }
+
+  &__toggle {
+    position: absolute;
+    right: $spacing-sm;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-text-light;
+    padding: $spacing-xs;
+    border-radius: $border-radius-sm;
+    transition: $transition-base;
+
+    &:hover {
+      color: $color-pink;
+    }
+
+    &:focus {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.password-requirements {
+  &__title {
+    font-size: $font-size-small;
+    font-weight: $font-weight-medium;
+    color: $color-text;
+    margin: 0 0 $spacing-sm 0;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__item {
+    font-size: $font-size-small;
+    padding: $spacing-xs 0;
+    transition: $transition-base;
+
+    &.valid {
+      color: $color-success;
+    }
+
+    &.invalid {
+      color: $color-text;
+    }
+  }
+}
+
+.security-code-container {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.security-code-input {
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid $color-border;
+  border-radius: $border-radius-md;
+  text-align: center;
+  font-size: $font-size-large;
+  font-weight: $font-weight-bold;
+  outline: none;
+  transition: $transition-base;
+
+  &:focus {
+    border-color: $color-pink;
+  }
+}
+
+.btn-primary {
+  @include button-base;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-sm;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: $color-primary;
+  font-size: $font-size-small;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.password-requirements {
+  margin-top: $spacing-md;
+}
+
+.requirements-title {
+  font-size: $font-size-small;
+  margin-bottom: $spacing-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.requirements-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.requirements-list li {
+  font-size: 0.75rem;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-xs;
+} 

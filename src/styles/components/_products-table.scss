@@ -1,0 +1,122 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mix;
+
+.table-div{
+  width: 100%;
+    max-width: 1310px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+    padding: 0 40px 20px 40px
+}
+.points-table-container {
+  @include mix.container;
+  margin: vars.$spacing-lg auto;
+  padding: 0 15px;
+
+  h2 {
+    font-size: vars.$font-size-large;
+    font-weight: vars.$font-weight-semibold;
+    margin-bottom: vars.$spacing-sm;
+    color: vars.$color-text;
+  }
+
+  .balance-box {
+    background-color: vars.$color-pink;
+    color: vars.$color-white;
+    font-weight: vars.$font-weight-normal;
+    font-size: 1.325rem;
+    padding: vars.$spacing-sm;
+    border-radius: vars.$border-radius-md;
+    margin-bottom: vars.$spacing-lg;
+    text-align: center;
+
+    strong {
+      font-weight: vars.$font-weight-bold;
+      font-size: vars.$font-size-xlarge;
+    }
+  }
+
+  table {
+    width: 100%;
+    overflow-x: auto;
+    table-layout: fixed;
+
+    thead {
+      text-align: center;
+
+      th {
+        text-align: center;
+        padding: vars.$spacing-md vars.$spacing-sm;
+        font-size: 1.125rem;
+        font-weight: vars.$font-weight-semibold;
+        color: vars.$color-text-light;
+        border-bottom: 1px solid vars.$color-pink;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid vars.$color-pink;
+
+        td {
+          padding: vars.$spacing-md vars.$spacing-sm;
+          font-size: 1.125rem;
+          color: vars.$color-text;
+          text-align: center
+        }
+      }
+    }
+  }
+
+  .pagination-dots {
+    @include mix.flex-center;
+    margin-top: vars.$spacing-md;
+
+    span {
+      width: 10px;
+      height: 10px;
+      background-color: vars.$color-gray;
+      border-radius: 50%;
+      margin: 0 4px;
+      transition: vars.$transition-base;
+
+      &.active {
+        background-color: vars.$color-pink;
+      }
+    }
+  }
+}
+
+.pagination {
+  @include mix.flex-center;
+  margin-top: vars.$spacing-sm;
+  color: transparent;
+
+  button {
+    margin: 0 0.25rem;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    width: 10px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: vars.$color-pink;
+    font-size: 0.9rem;
+
+    &.active {
+      text-decoration: underline;
+      font-weight: 700;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+} 

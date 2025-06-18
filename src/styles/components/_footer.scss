@@ -1,0 +1,102 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mix;
+
+.bem-especial-footer {
+  background-color: vars.$color-purple;
+  color: vars.$color-white;
+  padding: vars.$spacing-xl 0 vars.$spacing-lg;
+  margin-top: auto;
+  position: relative;
+}
+
+.footer-container {
+  @include mix.container;
+  margin: 0;
+  padding: 0 2rem;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: vars.$container-max-width;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 30px;
+  }
+  .footer-icon-button {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+  }
+}
+
+.footer-left {
+  @include mix.flex-column;
+  align-items: flex-start;
+  gap: vars.$spacing-lg;
+}
+
+.footer-disclaimer {
+  font-size: vars.$font-size-small;
+  line-height: 1.4;
+  color: vars.$color-white;
+
+  p {
+    font-family: vars.$font-family-base;
+    margin: 0;
+    margin-bottom: 0.2rem;
+    color: vars.$color-white;
+  }
+}
+
+.footer-icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.footer-container .icon {
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+}
+
+.footer-center,
+.footer-right {
+  @include mix.flex-column;
+  gap: vars.$spacing-md;
+}
+
+.footer-title {
+  font-family: vars.$font-family-base;
+  font-size: 1.1rem;
+  font-weight: vars.$font-weight-semibold;
+  margin: 0;
+  color: vars.$color-white;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  @include mix.flex-column;
+  gap: 0.8rem;
+
+  a {
+    font-family: vars.$font-family-base;
+    color: vars.$color-white;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: vars.$transition-base;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

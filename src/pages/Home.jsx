@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Carousel from '../components/Carousel';
 import Footer from '../layouts/Footer/Footer';
 import Header from '../layouts/Header/Header';
@@ -24,9 +25,7 @@ const Home = () => {
             <div className="text">
               <p>Confira seu extrato de pontos</p>
             </div>
-            <a href="" className="action-button">
-              Meus Pontos
-            </a>
+            <Link to="/meus-pontos" className="action-button">Meus Pontos</Link>
           </div>
           <div className="card">
             <div className="icon">
@@ -35,9 +34,7 @@ const Home = () => {
             <div className="text">
               <p>Veja os produtos disponíveis</p>
             </div>
-            <a href="" className="action-button">
-              Quero Resgatar
-            </a>
+            <Link to="/resgatar" className="action-button">Quero Resgatar</Link>
           </div>
           <div className="card">
             <div className="icon">
@@ -46,9 +43,7 @@ const Home = () => {
             <div className="text">
               <p>Acompanhe os resgates dos seus Vouchers</p>
             </div>
-            <a href="" className="action-button">
-              Meus Vouchers
-            </a>
+            <Link to="/vouchers" className="action-button">Meus Vouchers</Link>
           </div>
         </div>
       </main>

@@ -1,4 +1,4 @@
-@use '../styles/variables' as *;
+@use './abstracts/variables' as vars;
 
 .h2 {
     font-size: 300px;
@@ -32,7 +32,7 @@ table.product-table {
   }
 
   .balance-box {
-    background-color: $color-pink;
+    background-color: vars.$color-pink;
     color: white;
     font-weight: 400;
     font-size: 1.325rem;
@@ -67,13 +67,13 @@ table.product-table {
         font-size: 1.125rem;
         font-weight: 600;
         color: #555;
-        border-bottom: 1px solid $color-pink;
+        border-bottom: 1px solid vars.$color-pink;
       }
     }
 
     tbody {
       tr {
-        border-bottom: 1px solid $color-pink;
+        border-bottom: 1px solid vars.$color-pink;
 
 
         td {
@@ -114,7 +114,7 @@ table.product-table {
   button {
     margin: 0 0.25rem;
     border: none;
-    background-color: $color-gray;
+    background-color: vars.$color-gray;
     cursor: pointer;
     width: 30px;
     height: 30px;
@@ -125,7 +125,7 @@ table.product-table {
     color: transparent;
 
     &.active {
-      background-color: $color-pink;
+      background-color: vars.$color-pink;
     }
 
     &:disabled {

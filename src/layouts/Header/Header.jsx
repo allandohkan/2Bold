@@ -1,10 +1,11 @@
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import './Header.scss';
+import { useState } from 'react';
 import logoIcon from '../../assets/icons/logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -13,43 +14,54 @@ const Header = () => {
       <div className="header-container">
         <div className="header-content">
           <div className="logo-section">
-            <img src={logoIcon} alt="Bem Especial" className="logo-icon" />
+            <Link to="/" >
+              <img src={logoIcon} alt="Bem Especial" className="logo-icon" />
+            </Link>
           </div>
 
-          <nav className="main-nav hidden md:flex">
-            <Link to="/pontos" 
-              className={`nav-button nav-button-primary ${isActive('/pontos') ? 'active' : ''}`}
-            >
-              Meus Pontos
-            </Link>
-            
-            <Link to="/resgatar"
-              className={`nav-button nav-button-secondary ${isActive ('/resgatar') ? 'active' : ''}`}
-            >
-              Quero Resgatar
-            </Link>
-            
-            <Link to="/vouchers"
-              className={`nav-button nav-button-secondary ${isActive ('/vouchers') ? 'active' : ''}`}
-            >
-              Meus Vouchers
-            </Link>
-          </nav>
+          {/* MOBILE: Nome e pontos */}
+          <div className="mobile-user-info">
+            <div className="points-display">
+            <div className="greeting-text">Olá, Rafael</div>
+              <div className="points-label">VOCÊ TEM</div>
+              <div className="points-value">999.999 pts</div>
+            </div>
+            <button className="hamburger" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
 
+          {/* DESKTOP: Navegação e user-section */}
+          <nav className="main-nav">
+            <Link to="/meus-pontos" className={`nav-button ${isActive('/meus-pontos') ? 'active' : ''}`}>Meus Pontos</Link>
+            <Link to="/resgatar" className={`nav-button ${isActive('/resgatar') ? 'active' : ''}`}>Quero Resgatar</Link>
+            <Link to="/vouchers" className={`nav-button ${isActive('/vouchers') ? 'active' : ''}`}>Meus Vouchers</Link>
+          </nav>
           <div className="user-section">
             <div className="user-greeting">
               <div className="greeting-text">Olá, Rafael</div>
             </div>
-
             <div className="points-display">
               <div className="points-label">VOCÊ TEM</div>
               <div className="points-value">999.999 pts</div>
             </div>
-
-            <button className="exit-button" onClick={() => console.log('Sair clicado')}>
-              Sair
-            </button>
+            <button className="exit-button" onClick={() => console.log('Sair clicado')}>Sair</button>
           </div>
+
+          {/* MOBILE DRAWER */}
+          <div className={`mobile-drawer ${menuOpen ? 'open' : ''}`}>
+            <button className="close-drawer" onClick={() => setMenuOpen(false)} aria-label="Fechar menu">×</button>
+            <nav className="drawer-nav">
+              <Link to="/meus-pontos" className={`nav-button ${isActive('/meus-pontos') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Meus Pontos</Link>
+              <Link to="/resgatar" className={`nav-button ${isActive('/resgatar') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Quero Resgatar</Link>
+              <Link to="/vouchers" className={`nav-button ${isActive('/vouchers') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Meus Vouchers</Link>
+              <button className="exit-button" onClick={() => { setMenuOpen(false); console.log('Sair clicado'); }}>Sair</button>
+            </nav>
+          </div>
+          {/* Overlay para fechar drawer ao clicar fora */}
+          {menuOpen && <div className="drawer-overlay" onClick={() => setMenuOpen(false)}></div>}
         </div>
       </div>
     </header>

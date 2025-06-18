@@ -9,10 +9,12 @@ import BemEspecialLogin from './pages/LoginPage';
 import SingleProduct from './pages/SingleProduct';
 
 import './styles/global.scss';
+import './styles/main.scss';
 import './App.css';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import VouchersPage from './pages/VouchersPage';
 
 const App = () => {
   const DEV_MODE = true;
@@ -54,8 +56,12 @@ const App = () => {
             } 
           />
           <Route 
-            path="/my-points" 
+            path="/meus-pontos" 
             element={DEV_MODE ? <Products /> : <PrivateRoute element={<Products />} />} 
+          />
+          <Route 
+            path="/vouchers" 
+            element={DEV_MODE ? <VouchersPage /> : <PrivateRoute element={<VouchersPage />} />} 
           />
           <Route path="/produto/:nome" element={<SingleProduct />} />
           <Route 

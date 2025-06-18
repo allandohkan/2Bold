@@ -87,7 +87,7 @@ const ResgatePage = () => {
     }, [offset]);
 
     return (
-        <PageContainer title="Resgate">
+        <PageContainer title="Quero resgatar">
             <div className="container-resgatar-produtos">
                 {products.map((product, index) => (
                     <div className="card-regastar" key={index}>
