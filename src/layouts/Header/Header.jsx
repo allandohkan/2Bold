@@ -1,19 +1,61 @@
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import logoIcon from '../../assets/icons/logo.png';
 
 const Header = ({ onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userPoints, setUserPoints] = useState(0);
+  const [loadingPoints, setLoadingPoints] = useState(true);
+  
+  const { user, meusPontos } = useAuth();
 
   const isActive = (path) => location.pathname === path;
+
+  // Buscar pontos do usuário quando o componente carregar
+  useEffect(() => {
+    const fetchUserPoints = async () => {
+      if (user?.idparticipante) {
+        setLoadingPoints(true);
+        try {
+          const response = await meusPontos(user.idparticipante);
+          if (response.success && response.data) {
+            // A API retorna o saldo em response.data.saldo
+            const points = response.data.saldo || 0;
+            setUserPoints(points);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar pontos:', error);
+          setUserPoints(0);
+        } finally {
+          setLoadingPoints(false);
+        }
+      } else {
+        setLoadingPoints(false);
+      }
+    };
+
+    fetchUserPoints();
+  }, [user?.idparticipante, meusPontos]);
 
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
     }
     navigate('/login');
+  };
+
+  // Formatar pontos com separador de milhares
+  const formatPoints = (points) => {
+    return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  // Obter primeiro nome do usuário
+  const getFirstName = (fullName) => {
+    if (!fullName) return '';
+    return fullName.split(' ')[0];
   };
 
   return (
@@ -29,9 +71,11 @@ const Header = ({ onLogout }) => {
           {/* MOBILE: Nome e pontos */}
           <div className="mobile-user-info">
             <div className="points-display">
-            <div className="greeting-text">Olá, Rafael</div>
+              <div className="greeting-text">Olá, {getFirstName(user?.nome)}</div>
               <div className="points-label">VOCÊ TEM</div>
-              <div className="points-value">999.999 pts</div>
+              <div className="points-value">
+                {loadingPoints ? 'Carregando...' : `${formatPoints(userPoints)} pts`}
+              </div>
             </div>
             <button className="hamburger" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">
               <span></span>
@@ -48,11 +92,13 @@ const Header = ({ onLogout }) => {
           </nav>
           <div className="user-section">
             <div className="user-greeting">
-              <div className="greeting-text">Olá, Rafael</div>
+              <div className="greeting-text">Olá, {getFirstName(user?.nome)}</div>
             </div>
             <div className="points-display">
               <div className="points-label">VOCÊ TEM</div>
-              <div className="points-value">999.999 pts</div>
+              <div className="points-value">
+                {loadingPoints ? 'Carregando...' : `${formatPoints(userPoints)} pts`}
+              </div>
             </div>
             <button className="exit-button" onClick={handleLogout}>Sair</button>
           </div>

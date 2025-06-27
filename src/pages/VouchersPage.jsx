@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import DefaultPageContainer from '../layouts/Containers/DefaultPageContainer';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages/_vouchers.scss';
 
 const VouchersPage = () => {
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const { user, meusVouchers } = useAuth();
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -24,35 +28,35 @@ const VouchersPage = () => {
 
   useEffect(() => {
     const fetchVouchers = async () => {
+      if (!user?.idparticipante) {
+        setError('Usuário não identificado');
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
+      setError(null);
+      
       try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100');
-        const data = await response.json();
-
-        const detailedVouchers = await Promise.all(
-          data.results.map(async (pokemon) => {
-            const res = await fetch(pokemon.url);
-            const details = await res.json();
-            return {
-              date: "01/01/2024",
-              store: details.species.name,
-              product: details.name,
-              points: details.base_experience,
-              status: "Resgatado"
-            };
-          })
-        );
-
-        setVouchers(detailedVouchers);
+        const response = await meusVouchers(user.idparticipante);
+        
+        if (response.success && response.data) {
+          // A API retorna os vouchers em response.data.resgates
+          const resgates = response.data.resgates || [];
+          setVouchers(resgates);
+        } else {
+          setError(response.message || 'Erro ao carregar vouchers');
+        }
       } catch (error) {
         console.error("Erro ao buscar vouchers:", error);
+        setError('Erro de comunicação. Tente novamente.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchVouchers();
-  }, []);
+  }, [user?.idparticipante, meusVouchers]);
 
   // Componente de Loading
   const LoadingSpinner = () => (
@@ -62,10 +66,25 @@ const VouchersPage = () => {
     </div>
   );
 
+  // Componente de Erro
+  const ErrorMessage = () => (
+    <div className="text-center py-12">
+      <p className="text-red-600 mb-4">{error}</p>
+      <button 
+        onClick={() => window.location.reload()}
+        className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+      >
+        Tentar Novamente
+      </button>
+    </div>
+  );
+
   return (
     <DefaultPageContainer title="Meus Vouchers">
       {loading ? (
         <LoadingSpinner />
+      ) : error ? (
+        <ErrorMessage />
       ) : (
         <div className="vouchers-table-container">
           <div className="table-div overflow-x-auto">
@@ -74,20 +93,36 @@ const VouchersPage = () => {
               <thead>
                 <tr>
                   <th className="px-4 py-2 whitespace-nowrap">Data do Resgate</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Data de Utilização</th>
                   <th className="px-4 py-2 whitespace-nowrap">Loja</th>
                   <th className="px-4 py-2 whitespace-nowrap">Produto</th>
-                  <th className="px-4 py-2 whitespace-nowrap">Pontos Utilizados</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Quantidade</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Pontos</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Vigência</th>
                   <th className="px-4 py-2 whitespace-nowrap">Status</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
                 {currentItems.map((voucher, index) => (
                   <tr key={index}>
-                    <td className="px-4 py-2 whitespace-nowrap">{voucher.date}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{voucher.store}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{voucher.product}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{voucher.points}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{voucher.status}</td>
+                    <td className="px-4 py-2 whitespace-nowrap align-middle">{voucher.dataresgate}</td>
+                    <td className="px-4 py-2 whitespace-nowrap align-middle">{voucher.datautilzacao || '-'}</td>
+                    <td className="px-4 py-2 whitespace-nowrap align-middle">{voucher.loja || '-'}</td>
+                    <td className="px-4 py-2 whitespace-nowrap align-middle">{voucher.produto}</td>
+                    <td className="px-4 py-2 whitespace-nowrap align-middle">{voucher.qtde}</td>
+                    <td className="px-4 py-2 whitespace-nowrap align-middle">{voucher.pontos}</td>
+                    <td className="px-4 py-2 align-middle">
+                      <div className="vigencia-info">
+                        <div className="vigencia-line">{voucher.dataviginicio}</div>
+                        <div className="vigencia-line">até</div>
+                        <div className="vigencia-line">{voucher.datavigfim}</div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap align-middle">
+                      <span className={`status-badge ${voucher.status === 'Utilizado' ? 'used' : 'issued'}`}>
+                        {voucher.status}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -102,26 +137,57 @@ const VouchersPage = () => {
                 />
               ))}
             </div>
-            <div className="pagination flex flex-wrap gap-2 mt-4">
-              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-2 py-1 border rounded disabled:opacity-50">
-                {'<'}
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i + 1}
-                  onClick={() => handlePageChange(i + 1)}
-                  className={`px-2 py-1 border rounded ${currentPage === i + 1 ? 'bg-purple-200 font-bold' : ''}`}
-                >
-                  {i + 1}
+            
+            {vouchers.length === 0 && !loading && !error && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">Nenhum voucher encontrado.</p>
+              </div>
+            )}
+            
+            {vouchers.length > 0 && (
+              <div className="pagination flex flex-wrap gap-2 mt-4">
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-2 py-1 border rounded disabled:opacity-50">
+                  {'<'}
                 </button>
-              ))}
-              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-2 py-1 border rounded disabled:opacity-50">
-                {'>'}
-              </button>
-            </div>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => handlePageChange(i + 1)}
+                    className={`px-2 py-1 border rounded ${currentPage === i + 1 ? 'bg-purple-200 font-bold' : ''}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-2 py-1 border rounded disabled:opacity-50">
+                  {'>'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        .status-badge {
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+        }
+        
+        .status-badge.used {
+          background-color: #dcfce7;
+          color: #166534;
+          border: 1px solid #bbf7d0;
+        }
+        
+        .status-badge.issued {
+          background-color: #fef3c7;
+          color: #92400e;
+          border: 1px solid #fde68a;
+        }
+      `}</style>
     </DefaultPageContainer>
   );
 };
@@ -137,17 +203,22 @@ function VouchersAccordionItem({ voucher, index }) {
         aria-expanded={open}
         aria-controls={`accordion-content-${index}`}
       >
-        <span className="text-left flex-1">Produto: {voucher.product}</span>
+        <span className="text-left flex-1">Produto: {voucher.produto}</span>
         <span className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">{voucher.date}</span>
+          <span className="text-xs text-gray-500">{voucher.dataresgate}</span>
+          <span className={`status-badge ${voucher.status === 'Utilizado' ? 'used' : 'issued'}`}>
+            {voucher.status}
+          </span>
           <svg className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
         </span>
       </button>
       {open && (
         <ul id={`accordion-content-${index}`} className="px-4 pb-4 text-sm animate-fade-in">
-          <li><span className="font-semibold">Loja:</span> {voucher.store}</li>
-          <li><span className="font-semibold">Pontos Utilizados:</span> {voucher.points}</li>
-          <li><span className="font-semibold">Status:</span> {voucher.status}</li>
+          <li><span className="font-semibold">Data de Utilização:</span> {voucher.datautilzacao || '-'}</li>
+          <li><span className="font-semibold">Loja:</span> {voucher.loja || '-'}</li>
+          <li><span className="font-semibold">Quantidade:</span> {voucher.qtde}</li>
+          <li><span className="font-semibold">Pontos:</span> {voucher.pontos}</li>
+          <li><span className="font-semibold">Vigência:</span> {voucher.dataviginicio} até {voucher.datavigfim}</li>
         </ul>
       )}
     </div>

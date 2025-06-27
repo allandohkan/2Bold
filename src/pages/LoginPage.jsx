@@ -4,14 +4,15 @@ import PasswordValidation from '../components/Login/PasswordValidation.jsx';
 import SecurityCodeForm from '../components/Login/SecutiryCodeForm.jsx';
 import { Eye, EyeOff } from 'lucide-react';
 import '../styles/login.scss'
+import { useAuth } from '../contexts/AuthContext';
 
 import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
 import BemEspecialLogin from '../assets/images/Login_Desktop.png';
 import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
 import BemEspecialLoginSenhaInvalida from '../assets/images/Login_Desktop_Senha_Invalida.png';
 
-const BemEspecialLoginComponent = ({ onLogin }) => {
-  const [currentStep, setCurrentStep] = useState('cpf');
+const BemEspecialLoginComponent = () => {
+  const { currentStep, setCurrentStep, autenticarUsuario } = useAuth();
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +24,6 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
   const handleCPFAdvance = () => {
     setCurrentStep('password');
   };
-
 
   const handleSecurityCodeValidation = async (code) => {
     setIsLoading(true);
@@ -59,17 +59,17 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
     }
   };
 
-  const handleAdvance = () => {
+  const handleAdvance = async () => {
     if (currentStep === 'password' && password) {
-      if (onLogin) {
-        const loginSuccess = onLogin(cpf, password);
-        if (loginSuccess) {
-          setCurrentStep('home');
+      try {
+        const response = await autenticarUsuario(password);
+        if (response.success) {
+          setCurrentStep('authenticated');
         } else {
-          alert('Credenciais inválidas!');
+          alert(response.message || 'Credenciais inválidas!');
         }
-      } else {
-        setCurrentStep('home');
+      } catch (error) {
+        alert('Erro ao fazer login. Tente novamente.');
       }
     } else if (currentStep === 'forgotPassword') {
       handleForgotPassword();
@@ -111,7 +111,7 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
     }
   };
 
-  const getBackgroundImage = () => {
+  const getBackgroundImage = (currentStep) => {
     switch(currentStep) {
       case 'cpf':
         return BemEspecialLogin;
@@ -124,7 +124,10 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
     }
   };
 
-  if (currentStep === 'home') {
+  // Adicionar log para debug do fluxo
+  console.log('currentStep:', currentStep);
+
+  if (currentStep === 'authenticated') {
     return (
       <div className="login-container login-container--home">
         <div className="login-card login-card--home">
@@ -149,7 +152,7 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
   return (
     <div 
       className="login-container" 
-      style={{ backgroundImage: `url(${getBackgroundImage()})` }}
+      style={{ backgroundImage: `url(${getBackgroundImage(currentStep)})` }}
     >
       <div className="login-overlay">
         <div className="login-card">
@@ -166,7 +169,8 @@ const BemEspecialLoginComponent = ({ onLogin }) => {
               <CPFValidation 
                 cpf={cpf} 
                 setCpf={setCpf} 
-                onAdvance={handleCPFAdvance}
+                onGoToPassword={() => setCurrentStep('password')}
+                onGoToRegisterPassword={() => setCurrentStep('createPassword')}
               />
               <div className="form-footer">
                 <button className="link-button">Voltar</button>

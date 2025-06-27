@@ -29,6 +29,19 @@
   width: 100%;
   overflow-x: auto;
   table-layout: fixed;
+  font-size: 0.875rem;
+
+  th, td {
+    vertical-align: middle;
+  }
+
+  thead th {
+    white-space: pre-line;
+  }
+
+  tbody tr td {
+    white-space: pre-line;
+  }
 
   thead {
     text-align: center;
@@ -53,6 +66,18 @@
         color: #000;
         text-align: center;
       }
+    }
+  }
+
+  .vigencia-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    
+    .vigencia-line {
+      line-height: 1.2;
+      margin: 1px 0;
     }
   }
 }

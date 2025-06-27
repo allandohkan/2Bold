@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+
 const isValidCPF = (cpf) => {
   cpf = cpf.replace(/[^\d]+/g, '');
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -24,19 +27,53 @@ const formatCPF = (value) => {
     .replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
 };
 
-const CPFValidation = ({ cpf, setCpf, onAdvance }) => {
+const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterPassword }) => {
+  const { consultarCPF } = useAuth();
+  const [apiMessage, setApiMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
   const handleChange = (e) => {
     const formatted = formatCPF(e.target.value);
     if (formatted.length <= 14) {
       setCpf(formatted);
+      setApiMessage('');
+      setIsError(false);
     }
   };
 
-  const handleSubmit = () => {
-    if (isValidCPF(cpf)) {
-      onAdvance();
-    } else {
-      alert('CPF inválido. Verifique os números digitados.');
+  const handleSubmit = async () => {
+    if (!isValidCPF(cpf)) {
+      setApiMessage('CPF inválido. Verifique os números digitados.');
+      setIsError(true);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await consultarCPF(cpf.replace(/\D/g, ''));
+      const proximoPasso = response?.data?.proximoPasso;
+      console.log('proximoPasso retornado pela API:', proximoPasso);
+      if (response.success === 1) {
+        if (proximoPasso === 'Solicitar Senha') {
+          if (onGoToPassword) onGoToPassword();
+        } else if (proximoPasso === 'Cadastrar Senha') {
+          if (onGoToRegisterPassword) onGoToRegisterPassword();
+        } else {
+          setApiMessage(response.message || 'Ação desconhecida.');
+          setIsError(true);
+        }
+      } else if (response.success === 0 && proximoPasso === 'Solicitar novo CPF') {
+        setApiMessage(response.message || 'CPF não encontrado.');
+        setIsError(true);
+      } else {
+        setApiMessage(response.message || 'Erro desconhecido.');
+        setIsError(true);
+      }
+    } catch (error) {
+      setApiMessage('Erro de comunicação. Tente novamente.');
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,15 +93,41 @@ const CPFValidation = ({ cpf, setCpf, onAdvance }) => {
           value={cpf}
           onChange={handleChange}
           className="input-field"
+          disabled={isLoading}
         />
       </div>
 
+      {isLoading && (
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '12px 0' }}>
+          <div style={{
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #ea4ea1',
+            borderRadius: '50%',
+            width: 32,
+            height: 32,
+            animation: 'spin 1s linear infinite'
+          }} />
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      )}
+
+      {apiMessage && (
+        <div className={isError ? 'error-message' : ''}>
+          {apiMessage}
+        </div>
+      )}
+
       <button
         onClick={handleSubmit}
-        disabled={cpf.length !== 14}
+        disabled={cpf.length !== 14 || isLoading}
         className="btn-primary"
       >
-        AVANÇAR
+        {isLoading ? 'VERIFICANDO...' : 'AVANÇAR'}
       </button>
     </div>
   );
