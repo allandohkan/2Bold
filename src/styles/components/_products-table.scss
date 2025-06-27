@@ -55,7 +55,7 @@
       th {
         text-align: center;
         padding: vars.$spacing-md vars.$spacing-sm;
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: vars.$font-weight-semibold;
         color: #000;
         border-bottom: 1px solid vars.$color-pink;
@@ -68,9 +68,10 @@
 
         td {
           padding: vars.$spacing-md vars.$spacing-sm;
-          font-size: 1.125rem;
+          font-size: 1rem;
           color: vars.$color-text;
-          text-align: center
+          text-align: center;
+          vertical-align: middle;
         }
       }
     }

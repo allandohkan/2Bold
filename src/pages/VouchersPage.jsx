@@ -167,27 +167,7 @@ const VouchersPage = () => {
         </div>
       )}
 
-      <style jsx>{`
-        .status-badge {
-          padding: 4px 8px;
-          border-radius: 12px;
-          font-size: 12px;
-          font-weight: 500;
-          text-transform: uppercase;
-        }
-        
-        .status-badge.used {
-          background-color: #dcfce7;
-          color: #166534;
-          border: 1px solid #bbf7d0;
-        }
-        
-        .status-badge.issued {
-          background-color: #fef3c7;
-          color: #92400e;
-          border: 1px solid #fde68a;
-        }
-      `}</style>
+
     </DefaultPageContainer>
   );
 };

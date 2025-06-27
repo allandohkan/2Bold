@@ -96,7 +96,13 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
           disabled={isLoading}
         />
       </div>
-
+      <button
+        onClick={handleSubmit}
+        disabled={cpf.length !== 14 || isLoading}
+        className="btn-primary"
+      >
+        {isLoading ? 'VERIFICANDO...' : 'AVANÇAR'}
+      </button>
       {isLoading && (
         <div style={{ display: 'flex', justifyContent: 'center', margin: '12px 0' }}>
           <div style={{
@@ -122,13 +128,7 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
         </div>
       )}
 
-      <button
-        onClick={handleSubmit}
-        disabled={cpf.length !== 14 || isLoading}
-        className="btn-primary"
-      >
-        {isLoading ? 'VERIFICANDO...' : 'AVANÇAR'}
-      </button>
+      
     </div>
   );
 };

@@ -9,7 +9,6 @@ import { useAuth } from '../contexts/AuthContext';
 import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
 import BemEspecialLogin from '../assets/images/Login_Desktop.png';
 import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
-import BemEspecialLoginSenhaInvalida from '../assets/images/Login_Desktop_Senha_Invalida.png';
 
 const BemEspecialLoginComponent = () => {
   const { currentStep, setCurrentStep, autenticarUsuario } = useAuth();
