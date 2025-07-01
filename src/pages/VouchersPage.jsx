@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DefaultPageContainer from '../layouts/Containers/DefaultPageContainer';
 import { useAuth } from '../contexts/AuthContext';
-import '../styles/pages/_vouchers.scss';
 
 const VouchersPage = () => {
   const [vouchers, setVouchers] = useState([]);

@@ -6,7 +6,8 @@
 @use './components/voucher' as voucher;
 @use './components/header' as header;
 @use './components/footer' as footer;
-@use './components/products-table' as products;
+@use './components/mypoints-table' as products;
+@use './components/modal' as modal;
 
 // Pages
 @use './pages/single-product' as product;

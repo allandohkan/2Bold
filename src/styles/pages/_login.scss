@@ -35,24 +35,24 @@
   width: 100%;
   max-width: 758px;
   min-height: 90%;
-
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  
 }
+
+.logo-login-section {
+  text-align: center;
+  margin-bottom: $spacing-lg;
+  justify-content: space-evenly;
+}
+
 .logo-login-section img {
   max-width: 300px;
   margin: auto;
   display: block;
   width: 100%;
-}
-.logo-login-section {
-  text-align: center;
-  margin-bottom: $spacing-lg;
-  justify-content: space-evenly;
 }
 
 .logo-subtitle {
@@ -60,11 +60,6 @@
   color: $color-text-light;
   margin-top: $spacing-xs;
   margin-bottom: 0;
-}
-
-.error-message {
-  @include error-message;
-  margin-bottom: $spacing-sm;
 }
 
 .login-hint {
@@ -102,11 +97,15 @@
   max-width: 354px;
 }
 
+.input-group {
+  margin-bottom: $spacing-md;
+}
+
 .input-field {
   width: 100%;
   padding: $spacing-sm;
-  border: 1px solid $color-pink;
-  border-radius: 4px;
+  border: 2px solid #fce7f3;
+  border-radius: 0.5rem;
   font-size: $font-size-base;
   text-align: center;
   outline: none;
@@ -118,7 +117,7 @@
     border-color: $color-pink;
   }
 
-  &::placeholder{
+  &::placeholder {
     color: #D2D2D2;
   }
 
@@ -174,8 +173,24 @@
   width: 100%;
 
   &__field {
-    @include input-base;
-    padding-right: 3rem;
+    width: 100%;
+    padding: 12px 48px 12px 16px;
+    border: 2px solid $color-pink;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    &::placeholder {
+      color: #6c757d;
+    }
   }
 
   &__toggle {
@@ -204,10 +219,10 @@
 
 .password-requirements {
   &__title {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: $color-text;
-    margin: 0 0 $spacing-sm 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: black;
+    margin: 0 0 12px 0;
   }
 
   &__list {
@@ -219,16 +234,16 @@
   }
 
   &__item {
-    font-size: 0.65rem;
-    padding: 1px;
-    transition: $transition-base;
+    font-size: 14px;
+    padding: 4px 0;
+    transition: color 0.3s ease;
 
     &.valid {
       color: $color-success;
     }
 
     &.invalid {
-      color: $color-text;
+      color: black;
     }
   }
 }
@@ -243,13 +258,13 @@
 .security-code-input {
   width: 3rem;
   height: 3rem;
-  border: 2px solid $color-border;
-  border-radius: $border-radius-md;
+  border: 2px solid #fce7f3;
+  border-radius: 0.5rem;
   text-align: center;
-  font-size: $font-size-large;
-  font-weight: $font-weight-bold;
+  font-size: 1.125rem;
+  font-weight: bold;
   outline: none;
-  transition: $transition-base;
+  transition: border-color 0.2s ease;
 
   &:focus {
     border-color: $color-pink;
@@ -259,9 +274,9 @@
 .btn-primary {
   @include button-base;
   max-width: 354px;
-    margin: auto;
-    display: block;
-    width: 100%;
+  margin: auto;
+  display: block;
+  width: 100%;
   text-transform: uppercase;
 }
 
@@ -290,24 +305,40 @@
   }
 }
 
-.password-requirements {
-  margin-top: $spacing-md;
+.error-message {
+  @include error-message;
+  margin-bottom: $spacing-sm;
 }
 
-.requirements-title {
+.error-message p {
+  color: $color-error;
   font-size: $font-size-small;
-  margin-bottom: $spacing-xs;
-  font-weight: $font-weight-semibold;
-}
-
-.requirements-list {
-  list-style: none;
-  padding: 0;
   margin: 0;
 }
 
-.requirements-list li {
-  font-size: 0.75rem;
-  font-weight: $font-weight-medium;
-  margin-bottom: $spacing-xs;
+// Estilos específicos para a página de redefinição de senha
+.login-container--home {
+  background: none;
+  min-height: auto;
+  padding: 0;
+}
+
+.login-card--home {
+  background: rgba(255, 255, 255, 0.95);
+  max-width: 500px;
+  min-height: auto;
+  padding: $spacing-lg;
+}
+
+.welcome-title {
+  font-size: $font-size-large;
+  color: $color-text;
+  text-align: center;
+  margin-bottom: $spacing-sm;
+}
+
+.welcome-message {
+  color: $color-text-light;
+  text-align: center;
+  margin-bottom: $spacing-lg;
 } 

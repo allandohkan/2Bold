@@ -141,6 +141,30 @@ class ApiService {
     });
   }
 
+  // Enviar código de segurança para redefinição de senha
+  async enviarCodigoRedefinicao(email) {
+    return this.makeRequest('EnviarCodigoRedefinicao', {
+      email
+    });
+  }
+
+  // Validar código de redefinição de senha
+  async validarCodigoRedefinicao(email, codigo) {
+    return this.makeRequest('ValidarCodigoRedefinicao', {
+      email,
+      codigo
+    });
+  }
+
+  // Redefinir senha
+  async redefinirSenha(email, novaSenha, confirmarSenha) {
+    return this.makeRequest('RedefinirSenha', {
+      email,
+      novaSenha,
+      confirmarSenha
+    });
+  }
+
   // Autenticar usuário
   async autenticarUsuario(idparticipante, senha) {
     return this.makeRequest('AutenticarUsuario', {

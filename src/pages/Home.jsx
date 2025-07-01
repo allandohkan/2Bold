@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import Carousel from '../components/Carousel';
-import Footer from '../layouts/Footer/Footer';
-import Header from '../layouts/Header/Header';
+import Footer from '../layouts/Containers/Footer';
+import Header from '../layouts/Containers/Header';
 
 import CarouselImage from '../assets/images/mainbanner.png';
 import MeusPontosImage from '../assets/images/meuspontos.png';

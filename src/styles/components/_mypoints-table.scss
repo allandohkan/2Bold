@@ -1,25 +1,29 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins' as mix;
 
-.table-div{
+.table-div {
   width: 100%;
-    max-width: 1310px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 14px 15px 24px rgba(0, 0, 0, 0.2);
-    overflow-x: auto;
-    padding: 0 40px 20px 40px
+  max-width: 1310px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 14px 15px 24px rgba(0, 0, 0, 0.2);
+  overflow-x: auto;
+  padding: 0 40px 20px 40px;
 }
+
 @media screen and (max-width: 768px) {
-  .table-div{
+  .table-div {
     padding: 0 15px;
   }
 }
+
 .points-table-container {
   @include mix.container;
+  width: 100%;
+  max-width: 1280px;
   margin: vars.$spacing-lg auto;
-  padding: 0px;
+  padding: 0;
 
   h2 {
     font-size: vars.$font-size-large;
@@ -41,13 +45,11 @@
     strong {
       font-weight: vars.$font-weight-bold;
       font-size: vars.$font-size-xlarge;
+      display: block;
     }
   }
 
   table {
-    width: 100%;
-    overflow-x: auto;
-    table-layout: fixed;
 
     thead {
       text-align: center;
@@ -118,6 +120,7 @@
     &.active {
       text-decoration: underline;
       font-weight: 700;
+      background-color: vars.$color-pink;
     }
 
     &:disabled {
@@ -125,10 +128,29 @@
       cursor: not-allowed;
     }
   }
-} 
+}
 
 @media(max-width: 768px) {
-  .balance-box strong{
+  .balance-box strong {
     display: block;
   }
 }
+
+// Estilo extra do antigo ProductsTable.scss
+.h2 {
+  font-size: 300px;
+}
+
+.product-table td {
+  padding: 0 15px;
+}
+.product-table tr {
+  margin-bottom: 20px;
+}
+table.product-table {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+  margin-top: 20px;
+} 

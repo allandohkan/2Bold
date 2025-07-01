@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import './Modal.scss';
 import { useEffect, useRef, useState } from 'react';
 
 const Modal = ({ 

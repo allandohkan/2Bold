@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 /* Pages */
 import Home from './pages/Home';
 import BemEspecialLogin from './pages/LoginPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import SingleProduct from './pages/SingleProduct';
 import ProductListPage from './pages/ProductListPage';
 import MyPointsPage from './pages/MyPointsPage';
@@ -93,6 +94,7 @@ const AppRoutes = () => {
               : <BemEspecialLogin />
           } 
         />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route 
           path="/meus-pontos" 
           element={<PrivateRoute element={<MyPointsPage />} />} 

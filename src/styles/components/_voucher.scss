@@ -17,4 +17,119 @@
 
 .button-primary {
   @include mix.button-base;
+}
+
+// --- Estilos vindos de _vouchers.scss ---
+
+.vouchers-table-container {
+  @include mix.container;
+  margin: vars.$spacing-lg auto;
+  padding: 0;
+
+  h2 {
+    font-size: vars.$font-size-large;
+    font-weight: vars.$font-weight-semibold;
+    margin-bottom: vars.$spacing-sm;
+    color: vars.$color-text;
+  }
+}
+
+.table-div {
+  width: 100%;
+  max-width: 1310px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  padding: 0 40px 20px 40px;
+}
+
+.vouchers-table {
+  width: 100%;
+  overflow-x: auto;
+  table-layout: fixed;
+  font-size: 1rem;
+  margin-top: 20px;
+
+  th, td {
+    vertical-align: middle;
+  }
+
+  thead th {
+    white-space: pre-line;
+  }
+
+  tbody tr td {
+    white-space: pre-line;
+  }
+
+  thead {
+    text-align: center;
+
+    th {
+      text-align: center;
+      padding: vars.$spacing-md vars.$spacing-sm;
+      font-size: 1rem;
+      font-weight: vars.$font-weight-semibold;
+      color: #000;
+      border-bottom: 1px solid vars.$color-pink;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid vars.$color-pink;
+
+      td {
+        padding: vars.$spacing-md vars.$spacing-sm;
+        font-size: 1rem;
+        color: #000;
+        text-align: center;
+      }
+    }
+  }
+
+  .vigencia-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    
+    .vigencia-line {
+      line-height: 1.2;
+      margin: 1px 0;
+    }
+  }
+}
+
+.pagination {
+  @include mix.flex-center;
+  margin-top: vars.$spacing-sm;
+  color: transparent;
+
+  button {
+    margin: 0 0.25rem;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    width: 10px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: vars.$color-pink;
+    font-size: 0.9rem;
+
+    &.active {
+      text-decoration: underline;
+      font-weight: 700;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
 } 

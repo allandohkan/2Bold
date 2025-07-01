@@ -3,7 +3,7 @@ import CPFValidation from '../components/Login/CPFValidation.jsx';
 import PasswordValidation from '../components/Login/PasswordValidation.jsx';
 import SecurityCodeForm from '../components/Login/SecutiryCodeForm.jsx';
 import { Eye, EyeOff } from 'lucide-react';
-import '../styles/login.scss'
+import '../styles/pages/_login.scss'
 import { useAuth } from '../contexts/AuthContext';
 
 import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
