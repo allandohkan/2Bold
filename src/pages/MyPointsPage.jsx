@@ -1,10 +1,10 @@
-import ProductsTable from '../components/Products/MyPointsTable.jsx';
+import MyPointsTable from '../components/MyPointsTable.jsx';
 import PageContainer from '../layouts/Containers/DefaultPageContainer.jsx';
 
 const MyPointsPage = () => {
   return (
     <PageContainer title="Meus Pontos">
-      <ProductsTable />
+      <MyPointsTable />
     </PageContainer>
   );
 };

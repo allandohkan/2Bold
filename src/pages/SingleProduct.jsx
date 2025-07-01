@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import DefaultPageContainer from '../layouts/Containers/DefaultPageContainer';
 import ErrorImage from '../assets/images/failed-icon.png';
-import Modal from '../components/Modal/Modal';
+import Modal from '../components/Modal';
 import { useAuth } from '../contexts/AuthContext';
 
 const SingleProduct = () => {

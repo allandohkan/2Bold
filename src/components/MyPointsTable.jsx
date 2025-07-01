@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import apiService from '../../services/apiService';
+import { useAuth } from '../contexts/AuthContext';
+import apiService from '../services/apiService';
 
 const MyPointsTable = () => {
   const { user } = useAuth();
@@ -183,4 +183,4 @@ const MyPointsTable = () => {
   );
 }
 
-export default MyPointsTable;
+export default MyPointsTable; 
