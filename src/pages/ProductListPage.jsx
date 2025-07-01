@@ -7,12 +7,25 @@ const ProductListPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedQuantities, setSelectedQuantities] = useState({});
     
     const navigate = useNavigate();
     const { user, listarProdutos, logout } = useAuth();
 
     const handleLogout = () => {
         logout();
+    };
+
+    const handleQuantitySelect = (productId, quantity) => {
+        setSelectedQuantities(prev => ({
+            ...prev,
+            [productId]: quantity
+        }));
+    };
+
+    const getProductPoints = (product, quantity) => {
+        const pointsKey = `pontos_qtd_${quantity}`;
+        return product[pointsKey] || product.pontos_qtd_1 || 0;
     };
     
     // Função de carregamento dos produtos
@@ -87,27 +100,66 @@ const ProductListPage = () => {
     }
 
     return (
-        <PageContainer title="Quero resgatar" onLogout={handleLogout}>
-            <div className="container-resgatar-produtos">
-                {products.map((product, index) => (
-                    <div className="card-regastar" key={product.idproduto || index}>
-                        <div className="product-image">
-                            <img src={product.caminhofoto} alt={product.nomeproduto} />
-                        </div>
-                        <div className="product-info">
-                            <h2 className="quero-resgatar-points">{product.pontos_qtd_1} pts</h2>
-                            <h2 className="quero-resgatar-produtos">{product.nomeproduto}</h2>
-                            <p className="quero-resgatar-descricao">{product.descricaoproduto}</p>
-                        </div>
-                        <button id="quero-resgatar-button" onClick={() => navigate(`/produto/${product.nomeproduto}`)}>Quero Resgatar</button>
-                    </div>
-                ))}
-            </div>
+        <>
+            <PageContainer title="Quero resgatar" onLogout={handleLogout}>
+                <div className="container-resgatar-produtos">
+                    {products.map((product, index) => {
+                        const productId = product.idproduto || index;
+                        const selectedQuantity = selectedQuantities[productId] || 1;
+                        const currentPoints = getProductPoints(product, selectedQuantity);
+                        
+                        return (
+                            <div className="card-regastar" key={productId}>
+                                <div className="product-image">
+                                    <img src={product.caminhofoto} alt={product.nomeproduto} />
+                                </div>
+                                <div className="product-info">
+                                    <h2 className="quero-resgatar-points">{currentPoints} pts</h2>
+                                    <h2 className="quero-resgatar-produtos">{product.nomeproduto}</h2>
+                                    <p className="quero-resgatar-descricao">{product.descricaoproduto}</p>
+                                    
+                                    {/* Botões de quantidade */}
+                                    <div className="quantity-selector">
+                                        <h3>Escolha a quantidade:</h3>
+                                        <div className="quantity-buttons">
+                                                                                    <button 
+                                            className={`quantity-btn ${selectedQuantity === 1 ? 'active' : ''}`}
+                                            onClick={() => handleQuantitySelect(productId, 1)}
+                                        >
+                                            1 unid.
+                                        </button>
+                                        <button 
+                                            className={`quantity-btn ${selectedQuantity === 2 ? 'active' : ''}`}
+                                            onClick={() => handleQuantitySelect(productId, 2)}
+                                        >
+                                            2 unid.
+                                        </button>
+                                        <button 
+                                            className={`quantity-btn ${selectedQuantity === 3 ? 'active' : ''}`}
+                                            onClick={() => handleQuantitySelect(productId, 3)}
+                                        >
+                                            3 unid.
+                                        </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button 
+                                    id="quero-resgatar-button" 
+                                    onClick={() => navigate(`/produto/${product.nomeproduto}?qty=${selectedQuantity}`)}
+                                >
+                                    Quero Resgatar
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
 
-            {products.length === 0 && !loading && !error && (
-                <p style={{ textAlign: 'center' }} className='loading-text'>Nenhum produto disponível no momento.</p>
-            )}
-        </PageContainer>
+                {products.length === 0 && !loading && !error && (
+                    <p style={{ textAlign: 'center' }} className='loading-text'>Nenhum produto disponível no momento.</p>
+                )}
+            </PageContainer>
+
+        </>
     );
 };
 

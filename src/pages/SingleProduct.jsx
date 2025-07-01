@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import DefaultPageContainer from '../layouts/Containers/DefaultPageContainer';
 import ErrorImage from '../assets/images/failed-icon.png';
@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 const SingleProduct = () => {
   const { nome } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [produto, setProduto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,6 +27,17 @@ const SingleProduct = () => {
   
   const [userPoints, setUserPoints] = useState(0);
   const [productPoints, setProductPoints] = useState(0);
+
+  // Ler quantidade da URL e definir estado inicial
+  useEffect(() => {
+    const qtyFromUrl = searchParams.get('qty');
+    if (qtyFromUrl) {
+      const quantity = parseInt(qtyFromUrl);
+      if (quantity >= 1 && quantity <= 3) {
+        setSelectedQuantity(quantity);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProduto = async () => {
@@ -50,7 +62,9 @@ const SingleProduct = () => {
           
           if (produtoEncontrado) {
             setProduto(produtoEncontrado);
-            setProductPoints(produtoEncontrado.pontos_qtd_1);
+            // Atualizar pontos baseado na quantidade selecionada
+            const pointsKey = `pontos_qtd_${selectedQuantity}`;
+            setProductPoints(produtoEncontrado[pointsKey] || produtoEncontrado.pontos_qtd_1 || 0);
           } else {
             setError('Produto não encontrado');
           }
@@ -80,7 +94,7 @@ const SingleProduct = () => {
 
     fetchProduto();
     fetchUserPoints();
-  }, [nome, user?.idparticipante, listarProdutos, meusPontos]);
+  }, [nome, user?.idparticipante, listarProdutos, meusPontos, selectedQuantity]);
 
   const handleQuantitySelect = (quantity) => {
     setSelectedQuantity(quantity);
