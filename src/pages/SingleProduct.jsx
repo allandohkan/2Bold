@@ -18,7 +18,11 @@ const SingleProduct = () => {
   const [confirming, setConfirming] = useState(false);
   const [voucherCode, setVoucherCode] = useState('');
   
-  const { user, listarProdutos, meusPontos, resgatarVoucher } = useAuth();
+  const { user, listarProdutos, meusPontos, resgatarVoucher, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
   
   const [userPoints, setUserPoints] = useState(0);
   const [productPoints, setProductPoints] = useState(0);
@@ -91,14 +95,10 @@ const SingleProduct = () => {
     if (userPoints >= productPoints) {
       setConfirming(true);
       try {
-        console.log('Resgatando voucher:', {
-          idparticipante: user.idparticipante,
-          idproduto: produto.idproduto,
-          qtde: selectedQuantity
-        });
+
         
         const response = await resgatarVoucher(user.idparticipante, produto.idproduto, selectedQuantity);
-        console.log('Resposta do resgate:', response);
+
         
         if (response.success && response.data) {
           setIsRedeemed(true);
@@ -130,7 +130,7 @@ const SingleProduct = () => {
 
   if (loading) {
     return (
-      <DefaultPageContainer title="Produtos">
+      <DefaultPageContainer title="Produtos" onLogout={handleLogout}>
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
           <span className="ml-3 text-gray-600">Carregando produto...</span>
@@ -141,12 +141,12 @@ const SingleProduct = () => {
 
   if (error || !produto) {
     return (
-      <DefaultPageContainer title="Produtos">
-        <div className="text-center py-12">
+      <DefaultPageContainer title="Produtos" onLogout={handleLogout}>
+        <div className="not-found text-center py-12">
           <p className="text-red-600 mb-4">{error || 'Produto não encontrado'}</p>
           <button 
             onClick={() => navigate('/resgatar')}
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            className="btn-primary m-0"
           >
             Voltar aos Produtos
           </button>
@@ -156,7 +156,7 @@ const SingleProduct = () => {
   }
 
   return (
-    <DefaultPageContainer title={isRedeemed ? "Transação Confirmada" : "Produtos"}>
+    <DefaultPageContainer title={isRedeemed ? "Transação Confirmada" : "Produtos"} onLogout={handleLogout}>
       <Modal
         isOpen={showErrorModal}
         onClose={handleCloseErrorModal}
@@ -266,7 +266,7 @@ const SingleProduct = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .quantity-selector {
           margin: 20px 0;
         }

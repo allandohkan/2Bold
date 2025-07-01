@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProviderWrapper, useAuth } from './contexts/AuthContext';
 
 /* Pages */
 import Home from './pages/Home';
@@ -21,16 +21,12 @@ import 'slick-carousel/slick/slick-theme.css';
 const DEV_MODE = false; // Desativado - requer autenticação
 
 const PrivateRoute = ({ element }) => {
-  const { user, currentStep, loading } = useAuth();
+  const { user, loading, isFullyAuthenticated } = useAuth();
   
-  console.log('PrivateRoute - user:', user);
-  console.log('PrivateRoute - currentStep:', currentStep);
-  console.log('PrivateRoute - loading:', loading);
-  console.log('PrivateRoute - DEV_MODE:', DEV_MODE);
+  console.log('🔒 PrivateRoute - user:', user?.idparticipante, 'isFullyAuthenticated:', isFullyAuthenticated);
   
   // Se ainda está carregando, mostra loading
   if (loading) {
-    console.log('PrivateRoute - Ainda carregando...');
     return (
       <div className="flex justify-center items-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
@@ -39,24 +35,20 @@ const PrivateRoute = ({ element }) => {
     );
   }
   
-  // Verificação mais robusta de autenticação
-  const isAuthenticated = user && 
-                         user.idparticipante && 
-                         currentStep === 'authenticated';
+  // Verificação de autenticação completa - usuário deve estar totalmente autenticado
+  const isAuthenticated = user && user.idparticipante && isFullyAuthenticated;
   
   // Se está no modo DEV ou se o usuário está autenticado
   if (DEV_MODE || isAuthenticated) {
-    console.log('PrivateRoute - Acesso permitido');
     return element;
   }
   
-  console.log('PrivateRoute - Redirecionando para login');
   return <Navigate to="/login" replace />;
 };
 
 const AppRoutes = () => {
-  const { user, currentStep, logout } = useAuth();
-  const isAuthenticated = user && currentStep === 'authenticated';
+  const { user, logout, isFullyAuthenticated, debugAuthState, syncAuthState } = useAuth();
+  const isAuthenticated = user && user.idparticipante && isFullyAuthenticated;
 
   const handleLogout = () => {
     logout();
@@ -64,7 +56,6 @@ const AppRoutes = () => {
 
   return (
     <main className="main-content">
-      {/* Botão de debug temporário - removido para produção */}
       
       <Routes>
         <Route 
@@ -104,11 +95,11 @@ const AppRoutes = () => {
 
 const App = () => {
   return (
-    <AuthProvider>
+    <AuthProviderWrapper>
       <Router>
         <AppRoutes />
       </Router>
-    </AuthProvider>
+    </AuthProviderWrapper>
   );
 };
 

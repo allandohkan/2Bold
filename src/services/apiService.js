@@ -21,9 +21,6 @@ class ApiService {
     const maxRetries = 2;
     
     try {
-      console.log(`Iniciando autenticação (tentativa ${retryCount + 1})...`);
-      console.log('Payload de autenticação:', API_CREDENTIALS);
-      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos de timeout
       
@@ -38,46 +35,36 @@ class ApiService {
       });
 
       clearTimeout(timeoutId);
-      console.log('Resposta da autenticação:', response.status, response.statusText);
       
       // Se for Status 0 e ainda não tentou o máximo de vezes, tenta novamente
       if (response.status === 0 && retryCount < maxRetries) {
-        console.log(`Autenticação falhou com Status 0, tentando novamente em 1 segundo...`);
         await new Promise(resolve => setTimeout(resolve, 1000));
         return this.authenticate(retryCount + 1);
       }
       
       const responseText = await response.clone().text();
-      console.log('Corpo da resposta de autenticação:', responseText);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Erro na resposta:', errorText);
         throw new Error(`Erro na autenticação: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('Dados da autenticação:', data);
       
       // Tentar diferentes campos possíveis para o token
       this.token = data.token || data.access_token || data.accessToken || data.Token || data.AccessToken;
       
       if (!this.token) {
-        console.error('Token não encontrado na resposta:', data);
         throw new Error('Token não encontrado na resposta da autenticação');
       }
       
       this.tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
-      console.log('Token obtido com sucesso');
       this.useAuth = true;
       
       return this.token;
     } catch (error) {
-      console.error(`Erro na autenticação (tentativa ${retryCount + 1}):`, error);
-      
       // Se for erro de timeout ou Status 0 e ainda não tentou o máximo de vezes, tenta novamente
       if ((error.name === 'AbortError' || error.message.includes('Status 0')) && retryCount < maxRetries) {
-        console.log(`Tentativa ${retryCount + 1} falhou, tentando novamente em 2 segundos...`);
         await new Promise(resolve => setTimeout(resolve, 2000));
         return this.authenticate(retryCount + 1);
       }
@@ -90,163 +77,370 @@ class ApiService {
   // Verificar se o token é válido
   async ensureValidToken() {
     if (!this.token || (this.tokenExpiry && new Date() > this.tokenExpiry)) {
-      console.log('Token ausente ou expirado, autenticando novamente...');
       await this.authenticate();
     }
     return this.token;
   }
 
+  // Obter token atual
+  getToken() {
+    return this.token;
+  }
+
   // Método genérico para fazer requisições
-  async makeRequest(action, body, retryCount = 0) {
-    const maxRetries = 2;
-    
+  async makeRequest(action, body = {}) {
     try {
-      // Sempre autentica antes de qualquer requisição
-      const token = await this.ensureValidToken();
-      console.log(`Fazendo requisição: ${action} (tentativa ${retryCount + 1})`, body);
+      // Garantir que temos um token válido se a autenticação estiver habilitada
+      let token = null;
+      if (this.useAuth) {
+        token = await this.ensureValidToken();
+      }
+      
       const requestBody = {
-        action: action,
-        body: body
+        action,
+        body
       };
-      console.log('Corpo da requisição:', requestBody);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
-
+      
       const response = await fetch(ACTION_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
-        body: JSON.stringify(requestBody),
-        signal: controller.signal
+        body: JSON.stringify(requestBody)
       });
-
-      clearTimeout(timeoutId);
-      console.log(`Resposta da requisição com auth ${action}:`, response.status, response.statusText);
-
+      
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Erro na requisição com auth ${action}:`, errorText);
+        // Tentar ler o corpo da resposta como texto primeiro
+        const responseText = await response.text();
         
-        // Se for erro 0 (Status 0) e ainda não tentou o máximo de vezes, tenta novamente
-        if (response.status === 0 && retryCount < maxRetries) {
-          console.log(`Tentativa ${retryCount + 1} falhou com Status 0, tentando novamente...`);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Espera 1 segundo
-          return this.makeRequest(action, body, retryCount + 1);
+        // Se a resposta não estiver vazia, tentar fazer parse como JSON
+        let errorData;
+        try {
+          errorData = responseText ? JSON.parse(responseText) : { error: 'Resposta vazia' };
+        } catch (parseError) {
+          errorData = { error: responseText || 'Erro desconhecido' };
         }
         
-        throw new Error(`Erro na requisição ${action}: ${response.status} - ${errorText}`);
+        throw new Error(`Erro na requisição ${action}: ${response.status} - ${JSON.stringify(errorData)}`);
       }
-
+      
       const data = await response.json();
-      console.log(`Dados da resposta com auth ${action}:`, data);
+      
       return data;
     } catch (error) {
-      console.error(`Erro na requisição ${action} (tentativa ${retryCount + 1}):`, error);
-      
-      // Se for erro de timeout ou rede e ainda não tentou o máximo de vezes, tenta novamente
-      if ((error.name === 'AbortError' || error.message.includes('Status 0')) && retryCount < maxRetries) {
-        console.log(`Tentativa ${retryCount + 1} falhou, tentando novamente em 2 segundos...`);
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos
-        return this.makeRequest(action, body, retryCount + 1);
-      }
-      
       throw error;
     }
   }
 
   // Consultar CPF
   async consultarCPF(cpf) {
-    console.log('Consultando CPF:', cpf);
-    return this.makeRequest('ConsultarCPF', { cpf });
+    try {
+      // Sempre autenticar primeiro, já que a API exige token para todas as operações
+      await this.authenticate();
+      this.useAuth = true;
+      
+      const result = await this.makeRequest('ConsultarCPF', { cpf });
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Cadastrar senha
   async cadastrarSenha(idparticipante, senha, confirmasenha) {
-    return this.makeRequest('CadastrarSenha', {
-      idparticipante,
-      senha,
-      confirmasenha
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('CadastrarSenha', {
+        idparticipante,
+        senha,
+        confirmasenha
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Validar código
   async validarCodigo(idparticipante, codigovalidacao) {
-    return this.makeRequest('ValidarCodigo', {
-      idparticipante,
-      codigovalidacao
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('ValidarCodigo', {
+        idparticipante,
+        codigovalidacao
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Reenviar código
   async reenviarCodigo(idparticipante) {
-    return this.makeRequest('ReenviarCodigo', {
-      idparticipante
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('ReenviarCodigo', {
+        idparticipante
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Enviar email para redefinição de senha (novo fluxo)
   async resetSenha(email) {
-    return this.makeRequest('ResetSenha', {
-      email
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('ResetSenha', {
+        email,
+        paginaRedefinirSenha: window.location.origin + '/reset-password'
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Redefinir senha usando hash (novo fluxo)
-  async redefinirSenha(hash, novaSenha, confirmarSenha) {
-    return this.makeRequest('RedefinirSenha', {
-      hash,
-      novaSenha,
-      confirmarSenha
-    });
+  async redefinirSenha(codigoHash, senha, confirmasenha) {
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('RedefinirSenha', {
+        codigoHash,
+        senha,
+        confirmasenha
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Autenticar usuário
   async autenticarUsuario(idparticipante, senha) {
-    return this.makeRequest('AutenticarUsuario', {
-      idparticipante,
-      senha
-    });
+    // Garantir que temos um token válido antes de autenticar o usuário
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('AutenticarUsuario', {
+        idparticipante,
+        senha
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Consultar saldo
   async consultarSaldo(idparticipante) {
-    return this.makeRequest('ConsultarSaldo', {
-      idparticipante
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('ConsultarSaldo', {
+        idparticipante
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Listar produtos
   async listarProdutos(idparticipante) {
-    return this.makeRequest('ListarProdutos', {
-      idparticipante
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('ListarProdutos', {
+        idparticipante
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Meus pontos
-  async meusPontos(idparticipante) {
-    return this.makeRequest('MeusPontos', {
-      idparticipante
-    });
+  async meusPontos(idparticipante, userName = null) {
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const body = {
+        idparticipante
+      };
+      
+      // Adicionar nome do usuário se fornecido
+      if (userName) {
+        body.nome = userName;
+      }
+      
+      const result = await this.makeRequest('MeusPontos', body);
+      
+      // Verificar se é um usuário sem transações (success: 0 com mensagem específica)
+      if (result.success === 0 && result.message && result.message.includes('Participante não tem transações')) {
+        // Usuário sem transações - retornar dados estruturados como success: 1
+        return {
+          success: 1,
+          data: {
+            saldo: 0,
+            transacoes: []
+          },
+          message: 'Você não tem pontuação nesse momento.'
+        };
+      }
+      
+      // Verificar se é um usuário sem transações (success: 1 com lista vazia)
+      if (result.success === 1 && result.data && result.data.transacoes && result.data.transacoes.length === 0) {
+        // Usuário sem transações - retornar dados estruturados
+        return {
+          success: 1,
+          data: {
+            saldo: result.data.saldo || 0,
+            transacoes: []
+          },
+          message: result.message
+        };
+      }
+      
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Meus vouchers
   async meusVouchers(idparticipante) {
-    return this.makeRequest('MeusVouchers', {
-      idparticipante
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('MeusVouchers', {
+        idparticipante
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 
   // Resgatar voucher
   async resgatarVoucher(idparticipante, idproduto, qtde) {
-    return this.makeRequest('ResgatarVoucher', {
-      idparticipante,
-      idproduto,
-      qtde
-    });
+    // Garantir que temos um token válido
+    if (!this.token) {
+      await this.authenticate();
+    }
+    
+    // Usar autenticação da API
+    const originalUseAuth = this.useAuth;
+    this.useAuth = true;
+    
+    try {
+      const result = await this.makeRequest('ResgatarVoucher', {
+        idparticipante,
+        idproduto,
+        qtde
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.useAuth = originalUseAuth;
+    }
   }
 }
 

@@ -35,6 +35,8 @@ Abaixo segue a lista de endpoints e a seguir o detalhamento de cada um deles.
 •	MeusPontos
 •	MeusVouchers
 •	ResgatarVoucher
+•	ResetSenha
+•	RedefinirSenha
 
 Descrição dos métodos
 •	ConsultarCPF
@@ -484,4 +486,58 @@ o	Response
     "figfim": "26/06/2026",
     "proximoPasso": "Exibir dados resgate."
   }
+}{
+
+•	ResetSenha
+Este método deve ser utilizado para permitir que o usuário solicite um reset de senha por tê-la esquecido.
+A API enviará um email ao usuário com um botão que tem a url para redefinição de senha (enviada como parâmetro) + ?codigoHash=Código hash gerado.
+
+o	Request
+{
+  "action": "ResetSenha",
+  "body": {
+    "email": “oliveira.antonio.sp@gmail.com”,
+    “paginaRedefinirSenha”: “https://localhost:5174/2Bold/reset-password”
+  }
+}
+
+o	Response
+ {
+   "success": 1, 
+    "message": "E-mail localizado e link para redefinir senha enviado.", 
+    "data": {
+"idparticipante": " 537894257",
+		"nome": " ANDRESSA RODRIGUES DA SILVA", 
+		"proximoPasso": "Aguardar ação do usuário."
+	}
+}
+
+•	RedefinirSenha
+Este método deve ser utilizado enviar à API a nova senha digitada pelo usuário.
+O parâmetro codigoHash que deve ser enviado neste método deve ser extraído da url enviada ao usuário quando ele solicitou o reset de senha.
+Importante:
+Este método faz algumas validações que geram retorno sem sucesso como:
+- Código hash não localizado
+- Código hash expirado
+- Senha não atende as regras exigidas
+
+o	Request
+{
+  "action": "RedefinirSenha",
+  "body": {
+    "codigoHash": “B88B27EC-843C-4B58-8A81-5B1C55C117AB-A92312224C”,
+    “senha”: “Ab@12345”,
+   “confirmasenha”: “Ab@12345”
+  }
+}
+
+o	Response
+ {
+   "success": 1, 
+    "message": "Senha atende as regras.", 
+    "data": {
+"idparticipante": " 537894257",
+		"nome": " ANDRESSA RODRIGUES DA SILVA", 
+		"proximoPasso": "Fazer login."
+	}
 }

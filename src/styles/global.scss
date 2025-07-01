@@ -36,6 +36,11 @@ button {
   max-width: 1310px;
   margin: auto;
   padding: 0 15px;
+  min-height: 50vh;
+}
+.loading-message {
+  gap: 30px;
+  margin-top: 50px;
 }
 .page-title {
   font-size: $font-size-xlarge;
@@ -44,7 +49,14 @@ button {
   margin: $spacing-xl auto 0;
   padding: 0 $spacing-md;
 }
-
+.login-card .success-message{
+  font-size: 19.57px;
+  font-weight: 400;
+  text-align: center;
+  margin: auto;
+  margin-bottom: 50px;
+  color: black;
+}
 .container {
   max-width: $container-max-width;
   margin: 0 auto;
@@ -73,8 +85,67 @@ img.bem-especial-products-table-banner-image {
         margin-bottom: 1rem;
     }
 
+    .slick-slider {
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .slick-list {
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .slick-track {
+        &:focus {
+            outline: none;
+        }
+    }
+
     .slick-slide {
         padding: 0;
+        outline: none !important;
+        
+        &[tabindex] {
+            tabindex: -1;
+        }
+        
+        &.slick-cloned,
+        &:not(.slick-active) {
+            pointer-events: none;
+            
+            &:focus {
+                outline: none;
+            }
+            
+            * {
+                pointer-events: none;
+            }
+        }
+        
+        &.slick-active {
+            pointer-events: auto;
+            
+            * {
+                pointer-events: auto;
+            }
+        }
+        
+        &:focus {
+            outline: none !important;
+        }
+    }
+
+    .slick-dots {
+        li {
+            button {
+                &:focus {
+                    outline: 2px solid #d46aa5;
+                    outline-offset: 2px;
+                }
+            }
+        }
     }
 
     img {
@@ -209,21 +280,6 @@ img.bem-especial-products-table-banner-image {
   margin-bottom: 1.5rem;
 }
 
-.input-field {
-  width: 100%;
-  padding: 1rem;
-  border: 2px solid #fce7f3;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.2s ease;
-  box-sizing: border-box;
-}
-
-.input-field:focus {
-  border-color: $color-pink;
-}
 
 .input-field + .input-field {
   margin-top: 1rem;
@@ -326,14 +382,15 @@ img.bem-especial-products-table-banner-image {
     &:hover {
       color: linear-gradient(135deg, #db2777, #7c3aed);
     }
-
-    &:focus {
-      outline: 2px solid #007bff;
-      outline-offset: 2px;
-    }
   }
 }
-
+.table-message{
+  padding: 56px 0 36px 0;
+}
+.table-message p {
+  font-weight: 700;
+  color: #000;
+}
 .password-requirements {
   &__title {
     font-size: 14px;
@@ -558,4 +615,22 @@ button#quero-resgatar-button {
       background: #d46aa5;
     }
   }
+}
+.not-found {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 50px;
+  gap: 20px;
+}
+.not-found p{
+  font-size: 24px;
+    color: #333;
+}
+
+.m-0{
+  margin: 0 !important;
 }

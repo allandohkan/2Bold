@@ -42,6 +42,12 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && cpf.length === 14 && !isLoading) {
+      handleSubmit();
+    }
+  };
+
   const handleSubmit = async () => {
     if (!isValidCPF(cpf)) {
       setApiMessage('CPF inválido. Verifique os números digitados.');
@@ -52,11 +58,20 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
     try {
       const response = await consultarCPF(cpf.replace(/\D/g, ''));
       const proximoPasso = response?.data?.proximoPasso;
-      console.log('proximoPasso retornado pela API:', proximoPasso);
+      
+      // Verificar se é um caso de cadastro de senha necessário
+      if (response.success === 0 && 
+          (proximoPasso === 'Solicitar cadastro de senha' || 
+           response.message?.includes('CPF encontrado na base mas ainda não cadastro a senha'))) {
+        if (onGoToRegisterPassword) onGoToRegisterPassword();
+        return;
+      }
+      
       if (response.success === 1) {
         if (proximoPasso === 'Solicitar Senha') {
           if (onGoToPassword) onGoToPassword();
-        } else if (proximoPasso === 'Cadastrar Senha') {
+        } else if (proximoPasso === 'Cadastrar Senha' || 
+                   response.message?.includes('CPF encontrado na base mas ainda não cadastro a senha')) {
           if (onGoToRegisterPassword) onGoToRegisterPassword();
         } else {
           setApiMessage(response.message || 'Ação desconhecida.');
@@ -98,9 +113,12 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
       <div className="input-group">
         <input
           type="text"
+          id="cpf-input"
+          name="cpf"
           placeholder="Insira CPF aqui"
           value={cpf}
           onChange={handleChange}
+          onKeyPress={handleKeyPress}
           className="input-field"
           disabled={isLoading}
         />

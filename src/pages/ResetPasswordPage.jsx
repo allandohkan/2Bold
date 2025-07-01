@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PasswordValidation from '../components/Login/PasswordValidation.jsx';
+import Modal from '../components/Modal.jsx';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/apiService';
 
 import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
 import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
+import SuccessImage from '../assets/images/image 418.png';
+import FailedIcon from '../assets/images/failed-icon.png';
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
@@ -18,16 +21,17 @@ const ResetPasswordPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, message: '', isSuccess: false });
 
   // Verificar se há hash na URL (novo fluxo)
-  const hash = searchParams.get('cdp');
+  const codigoHash = searchParams.get('codigoHash') || searchParams.get('hashcode') || searchParams.get('hash');
 
   useEffect(() => {
     // Se há hash na URL, ir direto para redefinição de senha
-    if (hash) {
+    if (codigoHash) {
       setLocalCurrentStep('resetPassword');
     }
-  }, [hash]);
+  }, [codigoHash, searchParams]);
 
   const handleEmailSubmit = async () => {
     if (!email) {
@@ -56,7 +60,7 @@ const ResetPasswordPage = () => {
   };
 
   const handlePasswordReset = async () => {
-    if (!hash) {
+    if (!codigoHash) {
       setError('Link inválido para redefinição de senha.');
       return;
     }
@@ -65,11 +69,14 @@ const ResetPasswordPage = () => {
     setError('');
     
     try {
-      const response = await apiService.redefinirSenha(hash, newPassword, confirmPassword);
+      const response = await apiService.redefinirSenha(codigoHash, newPassword, confirmPassword);
       
       if (response.success === 1) {
-        alert('Senha alterada com sucesso!');
-        navigate('/login');
+        setModalConfig({
+          isOpen: true,
+          message: 'Senha redefinida com sucesso!\nRedirecionando...',
+          isSuccess: true
+        });
       } else {
         setError(response.message || 'Erro ao alterar senha. Tente novamente.');
       }
@@ -80,9 +87,16 @@ const ResetPasswordPage = () => {
     }
   };
 
+  const handleModalClose = () => {
+    setModalConfig({ isOpen: false, message: '', isSuccess: false });
+    navigate('/login');
+  };
+
   const handleBackToLogin = () => {
     navigate('/login');
   };
+
+
 
   return (
     <div 
@@ -111,9 +125,16 @@ const ResetPasswordPage = () => {
               <div className="input-group">
                 <input
                   type="email"
+                  id="reset-password-email"
+                  name="resetPasswordEmail"
                   placeholder="Digite seu e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && email && !isLoading) {
+                      handleEmailSubmit();
+                    }
+                  }}
                   className="input-field"
                 />
               </div>
@@ -158,7 +179,7 @@ const ResetPasswordPage = () => {
 
               <button
                 onClick={() => setLocalCurrentStep('email')}
-                className="btn-secondary"
+                className="btn-primary"
               >
                 ENVIAR NOVAMENTE
               </button>
@@ -181,12 +202,24 @@ const ResetPasswordPage = () => {
               confirmPassword={confirmPassword}
               setConfirmPassword={setConfirmPassword}
               onAdvance={handlePasswordReset}
+              onError={(message) => setError(message)}
               title="Crie uma nova senha para sua conta."
               showConfirmation={true}
             />
           )}
         </div>
       </div>
+      
+      {/* Modal de Sucesso/Erro */}
+      <Modal
+        isOpen={modalConfig.isOpen}
+        onClose={handleModalClose}
+        message={modalConfig.message}
+        image={modalConfig.isSuccess ? SuccessImage : FailedIcon}
+        buttonText="OK"
+        autoClose={modalConfig.isSuccess}
+        autoCloseTime={3000}
+      />
     </div>
   );
 };

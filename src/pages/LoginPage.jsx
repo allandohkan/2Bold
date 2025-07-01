@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CPFValidation from '../components/Login/CPFValidation.jsx';
 import PasswordValidation from '../components/Login/PasswordValidation.jsx';
 import SecurityCodeForm from '../components/Login/SecutiryCodeForm.jsx';
 import Modal from '../components/Modal.jsx';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import apiService from '../services/apiService';
 
 import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
 import BemEspecialLogin from '../assets/images/Login_Desktop.png';
 import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
 import FailedIcon from '../assets/images/failed-icon.png';
+import SuccessImage from '../assets/images/image 418.png';
 
 const BemEspecialLoginComponent = () => {
-  const { currentStep, setCurrentStep, autenticarUsuario } = useAuth();
+  const { currentStep, setCurrentStep, autenticarUsuario, cadastrarSenha, validarCodigo, reenviarCodigo, isFullyAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -21,6 +25,14 @@ const BemEspecialLoginComponent = () => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [modalError, setModalError] = useState({ isOpen: false, message: '' });
+  const [modalSuccess, setModalSuccess] = useState({ isOpen: false, message: '' });
+
+  // Redirecionar se o usuário estiver autenticado
+  useEffect(() => {
+    if (isFullyAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isFullyAuthenticated, navigate]);
 
   const handleCPFAdvance = () => {
     setCurrentStep('password');
@@ -29,15 +41,18 @@ const BemEspecialLoginComponent = () => {
   const handleSecurityCodeValidation = async (code) => {
     setIsLoading(true);
     try {
-      // Aqui você fará a chamada para a API para validar o código
-      // const response = await validateSecurityCode(code, email);
-      
-      // Simula validação por enquanto
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Se chegou até aqui, código está correto
-      alert('Código verificado com sucesso!');
-      setCurrentStep('resetPassword');
+      const response = await validarCodigo(code);
+      if (response.success) {
+        // Código validado com sucesso, usuário autenticado
+        setCurrentStep('authenticated');
+      } else {
+        // Mostrar erro
+        setModalError({
+          isOpen: true,
+          message: response.message || 'Código inválido.'
+        });
+        throw new Error(response.message);
+      }
     } catch (error) {
       // O componente SecurityCodeForm já lida com o erro
       throw error;
@@ -47,21 +62,30 @@ const BemEspecialLoginComponent = () => {
   };
 
   // Função para reenviar código de segurança
-  const handleResendSecurityCode = async (email) => {
+  const handleResendSecurityCode = async () => {
     try {
-      // chamada para a API para reenviar o código
-      // const response = await resendSecurityCode(email);
-      
-      // Simula envio por enquanto
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Novo código enviado para seu e-mail!');
+      const response = await reenviarCodigo();
+      if (response.success) {
+        setModalSuccess({
+          isOpen: true,
+          message: 'Novo código enviado para seu e-mail!'
+        });
+      } else {
+        setModalError({
+          isOpen: true,
+          message: response.message || 'Erro ao reenviar código.'
+        });
+      }
     } catch (error) {
-      throw new Error('Erro ao reenviar código');
+      setModalError({
+        isOpen: true,
+        message: 'Erro ao reenviar código. Tente novamente.'
+      });
     }
   };
 
   const handleAdvance = async () => {
-    if (currentStep === 'password' && password) {
+    if (currentStep === 'password') {
       try {
         const response = await autenticarUsuario(password);
         if (response.success) {
@@ -78,17 +102,30 @@ const BemEspecialLoginComponent = () => {
           message: 'Erro ao fazer login. Tente novamente.'
         });
       }
-    } else if (currentStep === 'forgotPassword') {
-      handleForgotPassword();
     }
   };
 
-  const handlePasswordCreate = () => {
-    alert('Senha criada com sucesso! Agora faça login.');
-    setCurrentStep('password');
-    setPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+  const handlePasswordCreate = async () => {
+    try {
+      const response = await cadastrarSenha(newPassword, confirmPassword);
+      if (response.success) {
+        // Senha cadastrada com sucesso, agora vai para validação de código
+        setCurrentStep('code');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        // Mostrar erro
+        setModalError({
+          isOpen: true,
+          message: response.message || 'Erro ao cadastrar senha.'
+        });
+      }
+    } catch (error) {
+      setModalError({
+        isOpen: true,
+        message: 'Erro ao cadastrar senha. Tente novamente.'
+      });
+    }
   };
 
 
@@ -104,15 +141,21 @@ const BemEspecialLoginComponent = () => {
   const handleForgotPassword = async () => {
     setIsLoading(true);
     try {
-      // chamada para a API para enviar código por email
-      // const response = await sendSecurityCode(email);
+      const response = await apiService.resetSenha(email);
       
-      // Simula envio por enquanto
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      alert('Código de segurança enviado para seu e-mail!');
-      setCurrentStep('securityCode');
+      if (response.success === 1) {
+        setCurrentStep('emailSent');
+      } else {
+        setModalError({
+          isOpen: true,
+          message: response.message || 'Erro ao enviar email. Tente novamente.'
+        });
+      }
     } catch (error) {
-      alert('Erro ao enviar código. Tente novamente.');
+      setModalError({
+        isOpen: true,
+        message: 'Erro ao enviar email. Tente novamente.'
+      });
     } finally {
       setIsLoading(false);
     }
@@ -125,36 +168,17 @@ const BemEspecialLoginComponent = () => {
       case 'password':
       case 'resetPassword':
       case 'securityCode':
+      case 'code':
+      case 'createPassword':
+      case 'forgotPassword':
+      case 'emailSent':
         return BemEspecialLoginSenha;
       default:
         return BemEspecialLogin;
     }
   };
 
-  // Adicionar log para debug do fluxo
-  console.log('currentStep:', currentStep);
 
-  if (currentStep === 'authenticated') {
-    return (
-      <div className="login-container login-container--home">
-        <div className="login-card login-card--home">
-          <div className="logo-login-section">
-            <h1 className="logo-text">
-              BEM<br />ESPECIAL
-            </h1>
-          </div>
-          <h2 className="welcome-title">Bem-vindo!</h2>
-          <p className="welcome-message">Login realizado com sucesso.</p>
-          <button 
-            onClick={() => setCurrentStep('cpf')}
-            className="btn-primary"
-          >
-            Voltar ao Login
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div 
@@ -181,12 +205,6 @@ const BemEspecialLoginComponent = () => {
               />
               <div className="form-footer">
                 <button className="link-button">Voltar</button>
-                <button 
-                  onClick={() => setCurrentStep('createPassword')}
-                  className="link-button"
-                >
-                  Fazer cadastro
-                </button>
               </div>
             </>
           )}
@@ -194,20 +212,29 @@ const BemEspecialLoginComponent = () => {
           {currentStep === 'password' && (
             <div className="form-section">
               <div className="form-description">
-                <p>Digite sua senha para continuar</p>
+                <p>Para avançar, insira <br />
+                a senha cadastrada. </p>
               </div>
 
               <div className="input-group">
                 <div className="password-input">
                   <input
                     type={showPassword ? "text" : "password"}
+                    id="login-password-input"
+                    name="loginPassword"
                     placeholder="Insira Senha aqui"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAdvance();
+                      }
+                    }}
                     className="password-input__field"
                   />
                   <button
                     type="button"
+                    tabIndex="-1"
                     onClick={() => setShowPassword(!showPassword)}
                     className="password-input__toggle"
                   >
@@ -224,13 +251,17 @@ const BemEspecialLoginComponent = () => {
                 ENTRAR
               </button>
 
-              <div className="form-footer">
-                <button 
-                  onClick={() => setCurrentStep('forgotPassword')}
-                  className="link-button"
-                >
-                  Esqueci minha senha
-                </button>
+              <div className="forgot-password-link">
+                <p>
+                  Esqueceu a senha? Clique{' '}
+                  <button 
+                    onClick={() => setCurrentStep('forgotPassword')}
+                    className="link-button"
+                  >
+                    aqui
+                  </button>
+                  .
+                </p>
               </div>
             </div>
           )}
@@ -242,7 +273,7 @@ const BemEspecialLoginComponent = () => {
               confirmPassword={confirmPassword}
               setConfirmPassword={setConfirmPassword}
               onAdvance={handlePasswordCreate}
-              title="Notamos que você não cadastrou uma senha para acessar o sistema. Crie uma senha e confirme."
+              title="Para completar seu cadastro, crie uma senha para acessar o sistema. Após criar a senha, enviaremos um código de validação para seu e-mail."
               showConfirmation={true}
             />
           )}
@@ -263,7 +294,7 @@ const BemEspecialLoginComponent = () => {
             <div className="form-section">
               <div className="form-description">
                 <p>
-                  Para recuperar sua senha, enviaremos um código<br />
+                  Para redefinir sua senha, enviaremos um link<br />
                   de segurança para seu e-mail cadastrado.
                 </p>
               </div>
@@ -271,19 +302,57 @@ const BemEspecialLoginComponent = () => {
               <div className="input-group">
                 <input
                   type="email"
-                  placeholder="Confirme seu e-mail"
+                  id="forgot-password-email"
+                  name="forgotPasswordEmail"
+                  placeholder="Digite seu e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && email && !isLoading) {
+                      handleForgotPassword();
+                    }
+                  }}
                   className="input-field"
                 />
               </div>
 
               <button
-                onClick={handleAdvance}
+                onClick={handleForgotPassword}
                 disabled={!email || isLoading}
                 className="btn-primary"
               >
-                {isLoading ? 'ENVIANDO...' : 'ENVIAR CÓDIGO'}
+                {isLoading ? 'ENVIANDO...' : 'ENVIAR LINK'}
+              </button>
+
+              <div className="form-footer">
+                <button 
+                  onClick={() => setCurrentStep('cpf')}
+                  className="link-button"
+                >
+                  Voltar ao login
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 'emailSent' && (
+            <div className="form-section">
+              <div className="form-description">
+                <p>
+                  Email enviado com sucesso!<br />
+                  Verifique sua caixa de entrada e clique no link recebido.
+                </p>
+              </div>
+
+              <div className="success-message">
+                <p>Se não recebeu o email, verifique sua pasta de spam.</p>
+              </div>
+
+              <button
+                onClick={() => setCurrentStep('forgotPassword')}
+                className="btn-primary"
+              >
+                ENVIAR NOVAMENTE
               </button>
 
               <div className="form-footer">
@@ -306,16 +375,37 @@ const BemEspecialLoginComponent = () => {
               isLoading={isLoading}
             />
           )}
+
+          {currentStep === 'code' && (
+            <SecurityCodeForm
+              onAdvance={handleSecurityCodeValidation}
+              onResendCode={handleResendSecurityCode}
+              onBack={() => setCurrentStep('createPassword')}
+              title="Por medida de segurança, enviamos no seu e-mail um código de 6 dígitos. Por favor, acesse o seu e-mail e insira o código no espaço abaixo."
+              isLoading={isLoading}
+            />
+          )}
         </div>
       </div>
       
-      {/* Modal de Erro - Apenas para erro de login */}
+      {/* Modal de Erro */}
       <Modal
         isOpen={modalError.isOpen}
         onClose={() => setModalError({ isOpen: false, message: '' })}
         message={modalError.message}
         image={FailedIcon}
         buttonText="Voltar"
+      />
+      
+      {/* Modal de Sucesso */}
+      <Modal
+        isOpen={modalSuccess.isOpen}
+        onClose={() => setModalSuccess({ isOpen: false, message: '' })}
+        message={modalSuccess.message}
+        image={SuccessImage}
+        buttonText="OK"
+        autoClose={true}
+        autoCloseTime={3000}
       />
     </div>
   );

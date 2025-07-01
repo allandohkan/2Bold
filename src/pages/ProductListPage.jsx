@@ -9,7 +9,11 @@ const ProductListPage = () => {
     const [error, setError] = useState(null);
     
     const navigate = useNavigate();
-    const { user, listarProdutos } = useAuth();
+    const { user, listarProdutos, logout } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+    };
     
     // Função de carregamento dos produtos
     const fetchProducts = async () => {
@@ -68,7 +72,7 @@ const ProductListPage = () => {
 
     if (loading) {
         return (
-            <PageContainer title="Quero resgatar">
+            <PageContainer title="Quero resgatar" onLogout={handleLogout}>
                 <LoadingSpinner />
             </PageContainer>
         );
@@ -76,14 +80,14 @@ const ProductListPage = () => {
 
     if (error) {
         return (
-            <PageContainer title="Quero resgatar">
+            <PageContainer title="Quero resgatar" onLogout={handleLogout}>
                 <ErrorMessage />
             </PageContainer>
         );
     }
 
     return (
-        <PageContainer title="Quero resgatar">
+        <PageContainer title="Quero resgatar" onLogout={handleLogout}>
             <div className="container-resgatar-produtos">
                 {products.map((product, index) => (
                     <div className="card-regastar" key={product.idproduto || index}>

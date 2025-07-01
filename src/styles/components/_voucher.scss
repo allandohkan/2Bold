@@ -25,6 +25,7 @@
   @include mix.container;
   margin: vars.$spacing-lg auto;
   padding: 0;
+  margin-bottom: 150px;
 
   h2 {
     font-size: vars.$font-size-large;

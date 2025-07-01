@@ -7,6 +7,7 @@ const PasswordValidation = ({
   confirmPassword, 
   setConfirmPassword, 
   onAdvance,
+  onError,
   title = "Notamos que você não cadastrou uma senha para acessar o sistema. Crie uma senha e confirme.",
   showConfirmation = true 
 }) => {
@@ -49,16 +50,35 @@ const PasswordValidation = ({
     }
   };
 
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && isFormValid) {
+      handleSubmit();
+    }
+  };
+
   const handleSubmit = () => {
     const validation = validatePassword(password);
     
     if (!validation.isValid) {
-      alert('Senha não atende aos requisitos mínimos!');
+      // Em vez de alert, vamos usar uma callback de erro se disponível
+      if (onError) {
+        onError('Senha não atende aos requisitos mínimos!');
+      } else {
+        alert('Senha não atende aos requisitos mínimos!');
+      }
       return;
     }
 
     if (showConfirmation && !confirmPassword) {
-      alert('Por favor, confirme a senha!');
+      if (onError) {
+        onError('Por favor, confirme a senha!');
+      } else {
+        alert('Por favor, confirme a senha!');
+      }
       return;
     }
 
@@ -78,13 +98,17 @@ const PasswordValidation = ({
         <div className="password-input">
           <input
             type={showPassword ? "text" : "password"}
+            id="password-input"
+            name="password"
             placeholder="Insira Senha aqui"
             value={password}
             onChange={handlePasswordChange}
+            onKeyPress={handleKeyPress}
             className="password-input__field"
           />
           <button
             type="button"
+            tabIndex="-1"
             onClick={() => setShowPassword(!showPassword)}
             className="password-input__toggle"
           >
@@ -96,13 +120,17 @@ const PasswordValidation = ({
           <div className="password-input">
             <input
               type={showConfirmPassword ? "text" : "password"}
+              id="confirm-password-input"
+              name="confirmPassword"
               placeholder="Confirme Senha aqui"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={handleConfirmPasswordChange}
+              onKeyPress={handleKeyPress}
               className="password-input__field"
             />
             <button
               type="button"
+              tabIndex="-1"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="password-input__toggle"
             >
@@ -114,7 +142,7 @@ const PasswordValidation = ({
 
       {showConfirmation && confirmPassword && password !== confirmPassword && (
         <div className="password-validation__error">
-          <p>⚠️ As senhas não coincidem</p>
+          <p>As senhas não coincidem</p>
         </div>
       )}
 

@@ -6,7 +6,9 @@ const Modal = ({
   onClose, 
   message, 
   image,
-  buttonText = 'Voltar'
+  buttonText = 'Voltar',
+  autoClose = false,
+  autoCloseTime = 3000
 }) => {
   const [show, setShow] = useState(isOpen);
   const [fadeClass, setFadeClass] = useState('');
@@ -20,6 +22,13 @@ const Modal = ({
       setTimeout(() => {
         setFadeClass('fade-in');
       }, 10); // pequeno delay para garantir o reflow
+      
+      // Auto close se habilitado
+      if (autoClose) {
+        timeoutRef.current = setTimeout(() => {
+          onClose();
+        }, autoCloseTime);
+      }
     } else if (show) {
       setFadeClass('fade-out');
       timeoutRef.current = setTimeout(() => {
@@ -27,7 +36,7 @@ const Modal = ({
       }, 300); // tempo igual ao da animação
     }
     return () => clearTimeout(timeoutRef.current);
-  }, [isOpen]);
+  }, [isOpen, autoClose, autoCloseTime, onClose]);
 
   if (!show) return null;
 
@@ -59,7 +68,9 @@ Modal.propTypes = {
   onClose: PropTypes.func.isRequired,
   message: PropTypes.string.isRequired,
   image: PropTypes.string,
-  buttonText: PropTypes.string
+  buttonText: PropTypes.string,
+  autoClose: PropTypes.bool,
+  autoCloseTime: PropTypes.number
 };
 
 export default Modal; 

@@ -4,10 +4,10 @@ import Footer from './Footer.jsx';
 import Banner from '../../components/Banner.jsx';
 import PageTitle from '../../components/PageTitle.jsx';
 
-const DefaultPageContainer = ({ title, children }) => {
+const DefaultPageContainer = ({ title, children, onLogout }) => {
   return (
     <div>
-      <Header />
+      <Header onLogout={onLogout} />
       <Banner />
       <PageTitle title={title} />
       <main className="page-content">

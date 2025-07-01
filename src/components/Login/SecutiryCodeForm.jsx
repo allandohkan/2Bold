@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 const SecurityCodeForm = ({ 
   onAdvance,
-  onResendCode, 
+  onResendCode,
+  onBack,
   title = "Por medida de segurança, enviamos no seu e-mail um código de 6 dígitos. Por favor, acesse o seu e-mail e insira o código no espaço abaixo.",
   isLoading = false 
 }) => {
@@ -41,7 +42,9 @@ const SecurityCodeForm = ({
   };
 
   const handleKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !securityCode[index] && index > 0) {
+    if (e.key === 'Enter' && isCodeComplete && !isLoading) {
+      handleSubmit();
+    } else if (e.key === 'Backspace' && !securityCode[index] && index > 0) {
       const prevInput = document.getElementById(`code-${index - 1}`);
       prevInput?.focus();
     } else if (e.key === 'Delete') {
@@ -123,6 +126,7 @@ const SecurityCodeForm = ({
           <input
             key={index}
             id={`code-${index}`}
+            name={`securityCode-${index}`}
             type="text"
             inputMode="numeric"
             maxLength="1"
@@ -151,6 +155,15 @@ const SecurityCodeForm = ({
       </button>
 
       <div className="form-footer">
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="link-button"
+            disabled={isLoading}
+          >
+            Voltar
+          </button>
+        )}
         {!canResend ? (
           <p>Reenviar código em: <strong>{formatTime(timeLeft)}</strong></p>
         ) : (

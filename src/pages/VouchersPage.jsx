@@ -5,6 +5,11 @@ import usePagination from '../hooks/usePagination';
 import Pagination from '../components/Pagination';
 
 const VouchersPage = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,9 +64,22 @@ const VouchersPage = () => {
 
   // Componente de Loading
   const LoadingSpinner = () => (
-    <div className="flex justify-center items-center py-12">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+    <div className="loading-message flex justify-center items-center py-12">
+      <div style={{
+        border: '4px solid #f3f3f3',
+        borderTop: '4px solid #ea4ea1',
+        borderRadius: '50%',
+        width: 32,
+        height: 32,
+        animation: 'spin 1s linear infinite'
+      }} />
       <span className="ml-3 text-gray-600 mt-5 mb-5">Carregando vouchers...</span>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 
@@ -79,7 +97,7 @@ const VouchersPage = () => {
   );
 
   return (
-    <DefaultPageContainer title="Meus Vouchers">
+    <DefaultPageContainer title="Meus Vouchers" onLogout={handleLogout}>
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
@@ -138,7 +156,7 @@ const VouchersPage = () => {
             </div>
             
             {totalItems === 0 && !loading && !error && (
-              <div className="text-center py-12">
+              <div className="text-center py-12 table-message">
                 <p className="text-gray-500">Nenhum voucher encontrado.</p>
               </div>
             )}

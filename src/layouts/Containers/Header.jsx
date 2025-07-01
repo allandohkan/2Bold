@@ -1,5 +1,5 @@
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import logoIcon from '../../assets/icons/logo.png';
 
@@ -8,44 +8,125 @@ const Header = ({ onLogout }) => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userPoints, setUserPoints] = useState(0);
-  const [loadingPoints, setLoadingPoints] = useState(true);
+  const [loadingPoints, setLoadingPoints] = useState(false);
+  const hasFetchedPoints = useRef(false);
+  const lastFetchedUserId = useRef(null);
+  const isExecuting = useRef(false);
   
-  const { user, meusPontos } = useAuth();
+  const { user, meusPontos, consultarSaldo, currentStep, user: authUser, forceRefreshPoints } = useAuth();
 
   const isActive = (path) => location.pathname === path;
 
+  // Resetar loading quando não há usuário
+  useEffect(() => {
+    if (!user?.idparticipante) {
+      setLoadingPoints(false);
+      setUserPoints(0);
+      hasFetchedPoints.current = false; // Resetar ref quando usuário muda
+      lastFetchedUserId.current = null; // Resetar ID do último usuário
+      isExecuting.current = false; // Resetar flag de execução
+    }
+  }, [user?.idparticipante]);
+
   // Buscar pontos do usuário quando o componente carregar
   useEffect(() => {
+    // Só executar se o usuário estiver autenticado e currentStep for "authenticated"
+    if (!user?.idparticipante || currentStep !== 'authenticated') {
+      setLoadingPoints(false);
+      hasFetchedPoints.current = false; // Resetar ref
+      lastFetchedUserId.current = null; // Resetar ID
+      isExecuting.current = false; // Resetar flag de execução
+      return;
+    }
+
+    // Verificar se já buscamos pontos para este usuário específico
+    if (hasFetchedPoints.current && lastFetchedUserId.current === user.idparticipante) {
+      return;
+    }
+
+    // Verificar se já está executando
+    if (isExecuting.current) {
+      return;
+    }
+
+    // Marcar como já buscado IMEDIATAMENTE para evitar chamadas duplicadas
+    hasFetchedPoints.current = true;
+    lastFetchedUserId.current = user.idparticipante;
+    isExecuting.current = true;
+
     const fetchUserPoints = async () => {
-      if (user?.idparticipante) {
-        setLoadingPoints(true);
-        try {
-          const response = await meusPontos(user.idparticipante);
-          if (response.success && response.data) {
-            // A API retorna o saldo em response.data.saldo
-            const points = response.data.saldo || 0;
-            setUserPoints(points);
-          }
-        } catch (error) {
-          console.error('Erro ao buscar pontos:', error);
-          setUserPoints(0);
-        } finally {
-          setLoadingPoints(false);
+      // Verificar se ainda deve executar
+      if (!isExecuting.current) {
+        return;
+      }
+
+      setLoadingPoints(true);
+      
+      try {
+        const result = await consultarSaldo(user.idparticipante);
+        
+        // Verificar se ainda deve processar o resultado
+        if (!isExecuting.current) {
+          return;
         }
-      } else {
-        setLoadingPoints(false);
+        
+        if (result.success) {
+          const pontos = result.data.saldo;
+          setUserPoints(pontos);
+        } else {
+          setUserPoints('0');
+        }
+      } catch (error) {
+        setUserPoints('0');
+      } finally {
+        // Só atualizar loading se ainda estiver executando
+        if (isExecuting.current) {
+          setLoadingPoints(false);
+          isExecuting.current = false;
+        }
       }
     };
 
+    // Buscar pontos imediatamente
     fetchUserPoints();
-  }, [user?.idparticipante, meusPontos]);
+  }, [user?.idparticipante, currentStep]); // Removido meusPontos das dependências
 
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
     }
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
+
+  // Função para forçar refresh dos pontos (opcional)
+  const handleRefreshPoints = async () => {
+    if (user?.idparticipante) {
+      // Resetar flags para permitir nova busca
+      isExecuting.current = false;
+      hasFetchedPoints.current = false;
+      lastFetchedUserId.current = null;
+      
+      setLoadingPoints(true);
+      
+      try {
+        const result = await consultarSaldo(user.idparticipante);
+        
+        if (result.success) {
+          const pontos = result.data.saldo;
+          setUserPoints(pontos);
+        }
+      } catch (error) {
+        // Erro silencioso
+      } finally {
+        setLoadingPoints(false);
+      }
+    }
+  };
+
+  // NOTA: Para adicionar um botão de refresh manual, você pode usar:
+  // <button onClick={handleRefreshPoints} disabled={loadingPoints}>
+  //   {loadingPoints ? 'Atualizando...' : '🔄'}
+  // </button>
 
   // Formatar pontos com separador de milhares
   const formatPoints = (points) => {
@@ -74,7 +155,7 @@ const Header = ({ onLogout }) => {
               <div className="greeting-text">Olá, {getFirstName(user?.nome)}</div>
               <div className="points-label">VOCÊ TEM</div>
               <div className="points-value">
-                {loadingPoints ? 'Carregando...' : `${formatPoints(userPoints)} pts`}
+                {loadingPoints ? 'Carregando...' : userPoints ? `${formatPoints(userPoints)} pts` : '0 pts'}
               </div>
             </div>
             <button className="hamburger" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">
@@ -96,8 +177,8 @@ const Header = ({ onLogout }) => {
             </div>
             <div className="points-display">
               <div className="points-label">VOCÊ TEM</div>
-              <div className="points-value">
-                {loadingPoints ? 'Carregando...' : `${formatPoints(userPoints)} pts`}
+                          <div className="points-value">
+                {loadingPoints ? 'Carregando...' : userPoints ? `${formatPoints(userPoints)} pts` : '0 pts'}
               </div>
             </div>
             <button className="exit-button" onClick={handleLogout}>Sair</button>

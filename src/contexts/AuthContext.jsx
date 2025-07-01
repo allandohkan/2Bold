@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import apiService from '../services/apiService';
 
 const AuthContext = createContext();
@@ -16,37 +16,97 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentStep, setCurrentStep] = useState('cpf'); // login, cpf, password, code, authenticated
+  const [isFullyAuthenticated, setIsFullyAuthenticated] = useState(false); // Flag para login completo
+  const initialized = useRef(false);
+  
+  // Cache para pontos do usuário
+  const [pointsCache, setPointsCache] = useState({
+    data: null,
+    timestamp: null,
+    userId: null
+  });
+  
+  // Tempo de expiração do cache (5 minutos)
+  const CACHE_EXPIRATION = 5 * 60 * 1000;
+
+  // Funções para gerenciar cache
+  const isCacheValid = (userId) => {
+    if (!pointsCache.data || pointsCache.userId !== userId) {
+      return false;
+    }
+    
+    const now = Date.now();
+    const cacheAge = now - pointsCache.timestamp;
+    
+    return cacheAge < CACHE_EXPIRATION;
+  };
+
+  const updatePointsCache = (userId, data) => {
+    setPointsCache({
+      data,
+      timestamp: Date.now(),
+      userId
+    });
+  };
+
+  const clearPointsCache = () => {
+    setPointsCache({
+      data: null,
+      timestamp: null,
+      userId: null
+    });
+  };
+
+  const forceRefreshPoints = () => {
+    clearPointsCache();
+  };
 
   // Carregar dados do usuário do localStorage na inicialização
   useEffect(() => {
-    console.log('AuthContext - Iniciando carregamento do localStorage');
+    if (initialized.current) return;
+    initialized.current = true;
+    // Evitar carregamento duplicado
+    if (!loading) return;
+    
+    console.log('🔄 AuthContext - Carregando localStorage');
     const savedUser = localStorage.getItem('user');
-    console.log('AuthContext - Dados salvos no localStorage:', savedUser);
+    const savedAuthStatus = localStorage.getItem('isFullyAuthenticated');
     
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
-        console.log('AuthContext - Dados do usuário carregados do localStorage:', userData);
+        const authStatus = savedAuthStatus === 'true';
+        console.log('AuthContext - User carregado:', userData?.idparticipante, 'Auth:', authStatus);
+        
+        // Definir estados de forma síncrona
         setUser(userData);
-        // Se há dados do usuário salvos, significa que está autenticado
-        setCurrentStep('authenticated');
-        console.log('AuthContext - Usuário autenticado, currentStep definido como "authenticated"');
+        setIsFullyAuthenticated(authStatus);
+        
+        // Verificar se o usuário está realmente autenticado
+        if (authStatus) {
+          setCurrentStep('authenticated');
+          console.log('AuthContext - Usuário autenticado ✓');
+        } else {
+          // Se há usuário mas não está totalmente autenticado, vai para CPF primeiro
+          setCurrentStep('cpf');
+          console.log('AuthContext - Usuário não autenticado, vai para CPF');
+        }
       } catch (error) {
         console.error('AuthContext - Erro ao carregar dados do usuário:', error);
         localStorage.removeItem('user');
+        localStorage.removeItem('isFullyAuthenticated');
         setCurrentStep('cpf');
-        console.log('AuthContext - Erro no parse, currentStep definido como "cpf"');
+        setIsFullyAuthenticated(false);
       }
     } else {
-      console.log('AuthContext - Nenhum usuário encontrado no localStorage');
+      console.log('AuthContext - Nenhum usuário no localStorage, vai para CPF');
       setCurrentStep('cpf');
-      console.log('AuthContext - currentStep definido como "cpf"');
+      setIsFullyAuthenticated(false);
     }
     setLoading(false);
-    console.log('AuthContext - Loading finalizado');
-  }, []);
+  }, [loading]);
 
-  // Salvar dados do usuário no localStorage quando mudar
+  // Salvar dados do usuário no localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
@@ -55,6 +115,40 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
+  // Salvar status de autenticação no localStorage
+  useEffect(() => {
+    localStorage.setItem('isFullyAuthenticated', isFullyAuthenticated.toString());
+  }, [isFullyAuthenticated]);
+
+  // Monitorar mudanças no localStorage e sincronizar estado
+  useEffect(() => {
+    // Só monitorar se não estiver carregando
+    if (loading) return;
+    
+    const checkAuthState = () => {
+      const savedUser = localStorage.getItem('user');
+      const savedAuthStatus = localStorage.getItem('isFullyAuthenticated');
+      
+      if (savedUser && savedAuthStatus === 'true' && !isFullyAuthenticated) {
+        console.log('AuthContext - Inconsistência detectada, sincronizando...');
+        try {
+          const userData = JSON.parse(savedUser);
+          setUser(userData);
+          setIsFullyAuthenticated(true);
+          setCurrentStep('authenticated');
+        } catch (error) {
+          console.error('AuthContext - Erro ao sincronizar estado:', error);
+        }
+      }
+    };
+
+    // Verificar a cada 2 segundos se há inconsistência (menos agressivo)
+    const interval = setInterval(checkAuthState, 2000);
+    return () => clearInterval(interval);
+  }, [isFullyAuthenticated, loading]);
+
+
+
   const login = (userData) => {
     setUser(userData);
     setError(null);
@@ -62,23 +156,81 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    setUser(null);
+    // Limpar localStorage primeiro
+    localStorage.removeItem('user');
+    localStorage.removeItem('isFullyAuthenticated');
+    // Limpar cache
+    clearPointsCache();
+    // Limpar estados
     setError(null);
     setCurrentStep('cpf');
-    localStorage.removeItem('user');
+    setUser(null);
+    setIsFullyAuthenticated(false);
+
   };
 
   const clearError = () => {
     setError(null);
   };
 
+  // Função de debug para verificar o estado atual
+  const debugAuthState = () => {
+    console.log('=== DEBUG AUTH STATE ===');
+    console.log('user:', user?.idparticipante);
+    console.log('isFullyAuthenticated:', isFullyAuthenticated);
+    console.log('currentStep:', currentStep);
+    console.log('loading:', loading);
+    console.log('localStorage user:', localStorage.getItem('user') ? 'presente' : 'ausente');
+    console.log('localStorage isFullyAuthenticated:', localStorage.getItem('isFullyAuthenticated'));
+    console.log('========================');
+  };
+
+  // Função para forçar sincronização do estado
+  const syncAuthState = () => {
+    const savedUser = localStorage.getItem('user');
+    const savedAuthStatus = localStorage.getItem('isFullyAuthenticated');
+    
+    if (savedUser && savedAuthStatus === 'true') {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+        setIsFullyAuthenticated(true);
+        setCurrentStep('authenticated');
+
+      } catch (error) {
+        console.error('AuthContext - Erro ao sincronizar estado:', error);
+      }
+    }
+  };
+
   // Métodos da API
   const consultarCPF = async (cpf) => {
-    console.log('AuthContext - consultarCPF chamado com CPF:', cpf);
     try {
       setError(null);
       const response = await apiService.consultarCPF(cpf);
-      console.log('AuthContext - Resposta da API consultarCPF:', response);
+      
+      // Verificar se é um caso de cadastro de senha necessário
+      if (response.success === 0 && 
+          (response.data?.proximoPasso === 'Solicitar cadastro de senha' || 
+           response.message?.includes('CPF encontrado na base mas ainda não cadastro a senha'))) {
+        
+        // CPF encontrado mas precisa cadastrar senha
+        const userData = {
+          idparticipante: response.data.idparticipante,
+          nome: response.data.nome,
+          cpf: cpf
+        };
+        
+        setUser(userData);
+        setIsFullyAuthenticated(false);
+        setCurrentStep('createPassword');
+        
+        return {
+          success: true,
+          data: response.data,
+          message: response.message
+        };
+      }
       
       if (response.success === 1) {
         // CPF encontrado na base de dados
@@ -88,16 +240,18 @@ export const AuthProvider = ({ children }) => {
           cpf: cpf
         };
         
-        console.log('AuthContext - Dados do usuário a serem salvos:', userData);
         setUser(userData);
+        // Garantir que o usuário não seja considerado autenticado automaticamente
+        setIsFullyAuthenticated(false);
         
         // Determinar próximo passo baseado na resposta da API
         if (response.data.proximoPasso === 'Solicitar Senha') {
           setCurrentStep('password');
-          console.log('AuthContext - Próximo passo: password');
+        } else if (response.data.proximoPasso === 'Cadastrar Senha' || 
+                   response.message?.includes('CPF encontrado na base mas ainda não cadastro a senha')) {
+          setCurrentStep('createPassword');
         } else {
           setCurrentStep('login');
-          console.log('AuthContext - Próximo passo: login');
         }
         
         return {
@@ -106,7 +260,6 @@ export const AuthProvider = ({ children }) => {
           message: response.message
         };
       } else {
-        console.log('AuthContext - CPF não encontrado ou erro na API');
         return {
           success: false,
           message: response.message,
@@ -114,11 +267,24 @@ export const AuthProvider = ({ children }) => {
         };
       }
     } catch (error) {
-      console.error('AuthContext - Erro ao consultar CPF:', error);
-      setError(error.message);
+      
+      // Tratar diferentes tipos de erro
+      let errorMessage = 'Erro ao consultar CPF';
+      
+      if (error.message.includes('401')) {
+        errorMessage = 'Erro de autenticação. Tente novamente.';
+      } else if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      } else if (error.message.includes('Unexpected end of JSON input')) {
+        errorMessage = 'Erro na resposta do servidor. Tente novamente.';
+      } else {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
       return {
         success: false,
-        message: error.message
+        message: errorMessage
       };
     }
   };
@@ -173,6 +339,17 @@ export const AuthProvider = ({ children }) => {
       
       if (response.success === 1) {
         setCurrentStep('authenticated');
+        setIsFullyAuthenticated(true);
+        
+        // Atualizar dados do usuário se a API retornar informações adicionais
+        if (response.data) {
+          const updatedUser = {
+            ...user,
+            ...response.data
+          };
+          setUser(updatedUser);
+        }
+        
         return {
           success: true,
           message: response.message
@@ -184,7 +361,6 @@ export const AuthProvider = ({ children }) => {
         };
       }
     } catch (error) {
-      console.error('Erro ao validar código:', error);
       setError(error.message);
       return {
         success: false,
@@ -228,11 +404,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const autenticarUsuario = async (senha) => {
-    console.log('AuthContext - autenticarUsuario chamado');
-    console.log('AuthContext - user atual:', user);
-    
     if (!user?.idparticipante) {
-      console.log('AuthContext - Usuário não identificado');
       setError('Usuário não identificado');
       return {
         success: false,
@@ -242,27 +414,23 @@ export const AuthProvider = ({ children }) => {
 
     try {
       setError(null);
-      console.log('AuthContext - Chamando API autenticarUsuario');
       const response = await apiService.autenticarUsuario(user.idparticipante, senha);
-      console.log('AuthContext - Resposta da API autenticarUsuario:', response);
       
       if (response.success === 1) {
-        console.log('AuthContext - Autenticação bem-sucedida, definindo currentStep como "authenticated"');
         setCurrentStep('authenticated');
+        setIsFullyAuthenticated(true);
         return {
           success: true,
           data: response.data,
           message: response.message
         };
       } else {
-        console.log('AuthContext - Falha na autenticação:', response.message);
         return {
           success: false,
           message: response.message
         };
       }
     } catch (error) {
-      console.error('AuthContext - Erro ao autenticar usuário:', error);
       setError(error.message);
       return {
         success: false,
@@ -301,18 +469,11 @@ export const AuthProvider = ({ children }) => {
   const listarProdutos = async (idparticipante) => {
     try {
       setError(null);
-      console.log('Chamando API listarProdutos para:', idparticipante);
       const response = await apiService.listarProdutos(idparticipante);
-      console.log('Resposta bruta da API listarProdutos:', response);
       
       if (response.success === 1) {
-        console.log('Produtos retornados:', response.data);
-        console.log('Tipo dos dados:', typeof response.data);
-        console.log('É array?', Array.isArray(response.data));
-        
         // A API retorna os produtos em response.data.produtos conforme a documentação
         const produtos = response.data?.produtos || [];
-        console.log('Array de produtos extraído:', produtos);
         
         return {
           success: true,
@@ -320,14 +481,12 @@ export const AuthProvider = ({ children }) => {
           message: response.message
         };
       } else {
-        console.log('Erro na API listarProdutos:', response.message);
         return {
           success: false,
           message: response.message
         };
       }
     } catch (error) {
-      console.error('Erro ao listar produtos:', error);
       setError(error.message);
       return {
         success: false,
@@ -336,29 +495,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const meusPontos = async (idparticipante) => {
+  const meusPontos = async (idparticipante, forceRefresh = false) => {
+    // Verificar se temos cache válido e não foi solicitado refresh forçado
+    if (!forceRefresh && isCacheValid(idparticipante)) {
+      return {
+        success: true,
+        data: pointsCache.data,
+        fromCache: true
+      };
+    }
+    
     try {
-      setError(null);
-      const response = await apiService.meusPontos(idparticipante);
+      // Passar o nome do usuário autenticado para o apiService
+      const userName = user?.nome || null;
+      const response = await apiService.meusPontos(idparticipante, userName);
       
-      if (response.success === 1) {
+      if (response && response.success === 1 && response.data) {
+        // Atualizar cache com os novos dados
+        updatePointsCache(idparticipante, response.data);
+        
         return {
           success: true,
           data: response.data,
-          message: response.message
+          fromCache: false
         };
       } else {
         return {
           success: false,
-          message: response.message
+          message: response?.message || 'Erro desconhecido na consulta de pontos'
         };
       }
     } catch (error) {
-      console.error('Erro ao consultar pontos:', error);
-      setError(error.message);
       return {
         success: false,
-        message: error.message
+        message: `Erro na requisição MeusPontos: ${error.message}`
       };
     }
   };
@@ -396,6 +566,9 @@ export const AuthProvider = ({ children }) => {
       const response = await apiService.resgatarVoucher(idparticipante, idproduto, qtde);
       
       if (response.success === 1) {
+        // Limpar cache dos pontos, pois o resgate altera o saldo
+        clearPointsCache();
+        
         return {
           success: true,
           data: response.data,
@@ -417,15 +590,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     loading,
     error,
     currentStep,
     setCurrentStep,
+    isFullyAuthenticated,
     login,
     logout,
     clearError,
+    debugAuthState,
+    syncAuthState,
     consultarCPF,
     cadastrarSenha,
     validarCodigo,
@@ -435,8 +611,19 @@ export const AuthProvider = ({ children }) => {
     listarProdutos,
     meusPontos,
     meusVouchers,
-    resgatarVoucher
-  };
+    resgatarVoucher,
+    // Funções de cache
+    forceRefreshPoints,
+    clearPointsCache,
+    pointsCache
+  }), [
+    user,
+    loading,
+    error,
+    currentStep,
+    isFullyAuthenticated,
+    pointsCache
+  ]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -445,4 +632,9 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export { AuthContext }; 
+// Wrapper para prevenir re-renderizações desnecessárias
+const AuthProviderWrapper = React.memo(({ children }) => {
+  return <AuthProvider>{children}</AuthProvider>;
+});
+
+export { AuthContext, AuthProviderWrapper }; 
