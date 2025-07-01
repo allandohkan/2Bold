@@ -70,7 +70,16 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
         setIsError(true);
       }
     } catch (error) {
-      setApiMessage('Erro de comunicação. Tente novamente.');
+      console.error('Erro na consulta de CPF:', error);
+      
+      // Verificar se é erro específico de Status 0
+      if (error.message && error.message.includes('Status 0')) {
+        setApiMessage('Erro de conexão. Verifique sua internet e tente novamente.');
+      } else if (error.message && error.message.includes('timeout')) {
+        setApiMessage('Tempo limite excedido. Tente novamente.');
+      } else {
+        setApiMessage('Erro de comunicação. Tente novamente.');
+      }
       setIsError(true);
     } finally {
       setIsLoading(false);

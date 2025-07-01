@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import DefaultPageContainer from '../layouts/Containers/DefaultPageContainer';
 import { useAuth } from '../contexts/AuthContext';
+import usePagination from '../hooks/usePagination';
+import Pagination from '../components/Pagination';
 
 const VouchersPage = () => {
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Paginação
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
   const { user, meusVouchers } = useAuth();
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = vouchers.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(vouchers.length / itemsPerPage);
+  // Paginação usando hook personalizado
+  const {
+    currentItems,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    goToPage
+  } = usePagination(vouchers, 10);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    goToPage(page);
   };
 
   useEffect(() => {
@@ -137,30 +137,20 @@ const VouchersPage = () => {
               ))}
             </div>
             
-            {vouchers.length === 0 && !loading && !error && (
+            {totalItems === 0 && !loading && !error && (
               <div className="text-center py-12">
                 <p className="text-gray-500">Nenhum voucher encontrado.</p>
               </div>
             )}
             
-            {vouchers.length > 0 && (
-              <div className="pagination flex flex-wrap gap-2 mt-4">
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-2 py-1 border rounded disabled:opacity-50">
-                  {'<'}
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <button
-                    key={i + 1}
-                    onClick={() => handlePageChange(i + 1)}
-                    className={`px-2 py-1 border rounded ${currentPage === i + 1 ? 'bg-purple-200 font-bold' : ''}`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-2 py-1 border rounded disabled:opacity-50">
-                  {'>'}
-                </button>
-              </div>
+            {totalItems > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                totalItems={totalItems}
+              />
             )}
           </div>
         </div>

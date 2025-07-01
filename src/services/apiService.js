@@ -17,20 +17,36 @@ class ApiService {
   }
 
   // Autenticação para obter token
-  async authenticate() {
+  async authenticate(retryCount = 0) {
+    const maxRetries = 2;
+    
     try {
-      console.log('Iniciando autenticação...');
+      console.log(`Iniciando autenticação (tentativa ${retryCount + 1})...`);
       console.log('Payload de autenticação:', API_CREDENTIALS);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos de timeout
+      
       const response = await fetch(AUTH_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(API_CREDENTIALS)
+        body: JSON.stringify(API_CREDENTIALS),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
       console.log('Resposta da autenticação:', response.status, response.statusText);
+      
+      // Se for Status 0 e ainda não tentou o máximo de vezes, tenta novamente
+      if (response.status === 0 && retryCount < maxRetries) {
+        console.log(`Autenticação falhou com Status 0, tentando novamente em 1 segundo...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return this.authenticate(retryCount + 1);
+      }
+      
       const responseText = await response.clone().text();
       console.log('Corpo da resposta de autenticação:', responseText);
 
@@ -57,7 +73,15 @@ class ApiService {
       
       return this.token;
     } catch (error) {
-      console.error('Erro na autenticação:', error);
+      console.error(`Erro na autenticação (tentativa ${retryCount + 1}):`, error);
+      
+      // Se for erro de timeout ou Status 0 e ainda não tentou o máximo de vezes, tenta novamente
+      if ((error.name === 'AbortError' || error.message.includes('Status 0')) && retryCount < maxRetries) {
+        console.log(`Tentativa ${retryCount + 1} falhou, tentando novamente em 2 segundos...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return this.authenticate(retryCount + 1);
+      }
+      
       this.useAuth = false;
       throw error;
     }
@@ -73,16 +97,21 @@ class ApiService {
   }
 
   // Método genérico para fazer requisições
-  async makeRequest(action, body) {
+  async makeRequest(action, body, retryCount = 0) {
+    const maxRetries = 2;
+    
     try {
       // Sempre autentica antes de qualquer requisição
       const token = await this.ensureValidToken();
-      console.log(`Fazendo requisição: ${action}`, body);
+      console.log(`Fazendo requisição: ${action} (tentativa ${retryCount + 1})`, body);
       const requestBody = {
         action: action,
         body: body
       };
       console.log('Corpo da requisição:', requestBody);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
 
       const response = await fetch(ACTION_URL, {
         method: 'POST',
@@ -91,14 +120,24 @@ class ApiService {
           'Accept': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
       console.log(`Resposta da requisição com auth ${action}:`, response.status, response.statusText);
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`Erro na requisição com auth ${action}:`, errorText);
+        
+        // Se for erro 0 (Status 0) e ainda não tentou o máximo de vezes, tenta novamente
+        if (response.status === 0 && retryCount < maxRetries) {
+          console.log(`Tentativa ${retryCount + 1} falhou com Status 0, tentando novamente...`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Espera 1 segundo
+          return this.makeRequest(action, body, retryCount + 1);
+        }
+        
         throw new Error(`Erro na requisição ${action}: ${response.status} - ${errorText}`);
       }
 
@@ -106,7 +145,15 @@ class ApiService {
       console.log(`Dados da resposta com auth ${action}:`, data);
       return data;
     } catch (error) {
-      console.error(`Erro na requisição ${action}:`, error);
+      console.error(`Erro na requisição ${action} (tentativa ${retryCount + 1}):`, error);
+      
+      // Se for erro de timeout ou rede e ainda não tentou o máximo de vezes, tenta novamente
+      if ((error.name === 'AbortError' || error.message.includes('Status 0')) && retryCount < maxRetries) {
+        console.log(`Tentativa ${retryCount + 1} falhou, tentando novamente em 2 segundos...`);
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos
+        return this.makeRequest(action, body, retryCount + 1);
+      }
+      
       throw error;
     }
   }
@@ -141,25 +188,17 @@ class ApiService {
     });
   }
 
-  // Enviar código de segurança para redefinição de senha
-  async enviarCodigoRedefinicao(email) {
-    return this.makeRequest('EnviarCodigoRedefinicao', {
+  // Enviar email para redefinição de senha (novo fluxo)
+  async resetSenha(email) {
+    return this.makeRequest('ResetSenha', {
       email
     });
   }
 
-  // Validar código de redefinição de senha
-  async validarCodigoRedefinicao(email, codigo) {
-    return this.makeRequest('ValidarCodigoRedefinicao', {
-      email,
-      codigo
-    });
-  }
-
-  // Redefinir senha
-  async redefinirSenha(email, novaSenha, confirmarSenha) {
+  // Redefinir senha usando hash (novo fluxo)
+  async redefinirSenha(hash, novaSenha, confirmarSenha) {
     return this.makeRequest('RedefinirSenha', {
-      email,
+      hash,
       novaSenha,
       confirmarSenha
     });

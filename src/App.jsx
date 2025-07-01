@@ -18,7 +18,7 @@ import './App.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-const DEV_MODE = true; // Ativando temporariamente para permitir acesso sem autenticação
+const DEV_MODE = false; // Desativado - requer autenticação
 
 const PrivateRoute = ({ element }) => {
   const { user, currentStep, loading } = useAuth();
@@ -39,8 +39,13 @@ const PrivateRoute = ({ element }) => {
     );
   }
   
+  // Verificação mais robusta de autenticação
+  const isAuthenticated = user && 
+                         user.idparticipante && 
+                         currentStep === 'authenticated';
+  
   // Se está no modo DEV ou se o usuário está autenticado
-  if (DEV_MODE || (user && currentStep === 'authenticated')) {
+  if (DEV_MODE || isAuthenticated) {
     console.log('PrivateRoute - Acesso permitido');
     return element;
   }
@@ -57,35 +62,15 @@ const AppRoutes = () => {
     logout();
   };
 
-  // Função para limpar localStorage (debug)
-  const clearLocalStorage = () => {
-    localStorage.removeItem('user');
-    window.location.reload();
-  };
-
   return (
     <main className="main-content">
-      {/* Botão de debug temporário */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{ position: 'fixed', top: 10, right: 10, zIndex: 9999 }}>
-          <button 
-            onClick={clearLocalStorage}
-            style={{ 
-              background: 'red', 
-              color: 'white', 
-              padding: '5px 10px', 
-              border: 'none', 
-              borderRadius: '4px',
-              fontSize: '12px'
-            }}
-          >
-            Limpar Cache
-          </button>
-        </div>
-      )}
+      {/* Botão de debug temporário - removido para produção */}
       
       <Routes>
-        <Route path="/" element={<Home onLogout={handleLogout} />} />
+        <Route 
+          path="/" 
+          element={<PrivateRoute element={<Home onLogout={handleLogout} />} />} 
+        />
         <Route 
           path="/login" 
           element={
@@ -103,12 +88,15 @@ const AppRoutes = () => {
           path="/vouchers" 
           element={<PrivateRoute element={<VouchersPage />} />} 
         />
-        <Route path="/produto/:nome" element={<SingleProduct />} />
+        <Route 
+          path="/produto/:nome" 
+          element={<PrivateRoute element={<SingleProduct />} />} 
+        />
         <Route 
           path="/resgatar" 
           element={<PrivateRoute element={<ProductListPage />} />} 
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </main>
   );

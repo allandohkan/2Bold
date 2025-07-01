@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/apiService';
+import Pagination from './Pagination';
+import usePagination from '../hooks/usePagination';
 
 const MyPointsTable = () => {
   const { user } = useAuth();
@@ -9,15 +11,15 @@ const MyPointsTable = () => {
   const [error, setError] = useState(null);
   const [saldo, setSaldo] = useState(0);
 
-  // Paginação
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = points.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(points.length / itemsPerPage);
+  // Paginação usando hook personalizado
+  const {
+    currentItems,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    goToPage
+  } = usePagination(points, 10);
 
   // Estado para acordeons abertos no mobile
   const [openAccordions, setOpenAccordions] = useState([]);
@@ -31,9 +33,7 @@ const MyPointsTable = () => {
   };
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    goToPage(page);
   };
 
   useEffect(() => {
@@ -159,24 +159,14 @@ const MyPointsTable = () => {
           </div>
         )}
         
-        {points.length > 0 && (
-          <div className="pagination flex flex-wrap gap-2 mt-4">
-            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-2 py-1 border rounded disabled:opacity-50">
-              {'<'}
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => handlePageChange(i + 1)}
-                className={`px-2 py-1 border rounded ${currentPage === i + 1 ? 'bg-purple-200 font-bold' : ''}`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-2 py-1 border rounded disabled:opacity-50">
-              {'>'}
-            </button>
-          </div>
+        {totalItems > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+          />
         )}
       </div>
     </div>

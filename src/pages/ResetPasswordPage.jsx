@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PasswordValidation from '../components/Login/PasswordValidation.jsx';
-import SecurityCodeForm from '../components/Login/SecutiryCodeForm.jsx';
-import '../styles/pages/_login.scss';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/apiService';
 
@@ -21,17 +19,15 @@ const ResetPasswordPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Verificar se há token na URL (opcional, para validação adicional)
-  const token = searchParams.get('token');
-  const emailFromUrl = searchParams.get('email');
+  // Verificar se há hash na URL (novo fluxo)
+  const hash = searchParams.get('cdp');
 
   useEffect(() => {
-    // Se há email na URL, usar ele
-    if (emailFromUrl) {
-      setEmail(emailFromUrl);
-      setLocalCurrentStep('securityCode');
+    // Se há hash na URL, ir direto para redefinição de senha
+    if (hash) {
+      setLocalCurrentStep('resetPassword');
     }
-  }, [emailFromUrl]);
+  }, [hash]);
 
   const handleEmailSubmit = async () => {
     if (!email) {
@@ -43,61 +39,33 @@ const ResetPasswordPage = () => {
     setError('');
     
     try {
-      const response = await apiService.enviarCodigoRedefinicao(email);
+      const response = await apiService.resetSenha(email);
       
       if (response.success === 1) {
-        setLocalCurrentStep('securityCode');
+        // Mostrar mensagem de sucesso e instruções
+        setError('Email enviado com sucesso! Verifique sua caixa de entrada e clique no link recebido.');
+        setLocalCurrentStep('emailSent');
       } else {
-        setError(response.message || 'Erro ao enviar código. Tente novamente.');
+        setError(response.message || 'Erro ao enviar email. Tente novamente.');
       }
     } catch (error) {
-      setError('Erro ao enviar código. Tente novamente.');
+      setError('Erro ao enviar email. Tente novamente.');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleSecurityCodeValidation = async (code) => {
-    setIsLoading(true);
-    setError('');
-    
-    try {
-      const response = await apiService.validarCodigoRedefinicao(email, code);
-      
-      if (response.success === 1) {
-        setLocalCurrentStep('resetPassword');
-      } else {
-        setError(response.message || 'Código inválido. Tente novamente.');
-        throw new Error(response.message);
-      }
-    } catch (error) {
-      setError('Código inválido. Tente novamente.');
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendSecurityCode = async () => {
-    try {
-      const response = await apiService.enviarCodigoRedefinicao(email);
-      
-      if (response.success === 1) {
-        alert('Novo código enviado para seu e-mail!');
-      } else {
-        setError(response.message || 'Erro ao reenviar código');
-      }
-    } catch (error) {
-      setError('Erro ao reenviar código');
     }
   };
 
   const handlePasswordReset = async () => {
+    if (!hash) {
+      setError('Link inválido para redefinição de senha.');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
     
     try {
-      const response = await apiService.redefinirSenha(email, newPassword, confirmPassword);
+      const response = await apiService.redefinirSenha(hash, newPassword, confirmPassword);
       
       if (response.success === 1) {
         alert('Senha alterada com sucesso!');
@@ -135,7 +103,7 @@ const ResetPasswordPage = () => {
             <div className="form-section">
               <div className="form-description">
                 <p>
-                  Para redefinir sua senha, enviaremos um código<br />
+                  Para redefinir sua senha, enviaremos um link<br />
                   de segurança para seu e-mail cadastrado.
                 </p>
               </div>
@@ -161,7 +129,7 @@ const ResetPasswordPage = () => {
                 disabled={!email || isLoading}
                 className="btn-primary"
               >
-                {isLoading ? 'ENVIANDO...' : 'ENVIAR CÓDIGO'}
+                {isLoading ? 'ENVIANDO...' : 'ENVIAR LINK'}
               </button>
 
               <div className="form-footer">
@@ -175,15 +143,35 @@ const ResetPasswordPage = () => {
             </div>
           )}
 
-          {currentStep === 'securityCode' && (
-            <SecurityCodeForm
-              onAdvance={handleSecurityCodeValidation}
-              onResendCode={handleResendSecurityCode}
-              onBack={() => setLocalCurrentStep('email')}
-              email={email}
-              isLoading={isLoading}
-              title="Digite o código de 6 dígitos enviado para seu e-mail."
-            />
+          {currentStep === 'emailSent' && (
+            <div className="form-section">
+              <div className="form-description">
+                <p>
+                  Email enviado com sucesso!<br />
+                  Verifique sua caixa de entrada e clique no link recebido.
+                </p>
+              </div>
+
+              <div className="success-message">
+                <p>Se não recebeu o email, verifique sua pasta de spam.</p>
+              </div>
+
+              <button
+                onClick={() => setLocalCurrentStep('email')}
+                className="btn-secondary"
+              >
+                ENVIAR NOVAMENTE
+              </button>
+
+              <div className="form-footer">
+                <button 
+                  onClick={handleBackToLogin}
+                  className="link-button"
+                >
+                  Voltar ao login
+                </button>
+              </div>
+            </div>
           )}
 
           {currentStep === 'resetPassword' && (

@@ -81,15 +81,16 @@
 
 .form-description {
   text-align: center;
-  margin-bottom: $spacing-md;
+  margin-bottom: 1.5rem;
 }
 
 .form-description p {
-  font-weight: $font-weight-normal;
-  line-height: 1.5;
-  margin: 0;
-  font-size: 20px;
-  color: black;
+  text-align: center;
+  margin: auto;
+  margin-bottom: $spacing-md;
+  max-width: 425px;
+  line-height: 1.2;
+  font-size: 19.57px;
 }
 
 .form-section .input-group {
@@ -132,7 +133,7 @@
   margin: 0 auto;
   
   &__description {
-    margin-bottom: $spacing-lg;
+    margin-bottom: 24px;
     
     p {
       color: $color-text;
@@ -258,13 +259,15 @@
 .security-code-input {
   width: 3rem;
   height: 3rem;
-  border: 2px solid #fce7f3;
+  border: 1px solid $color-pink;
   border-radius: 0.5rem;
   text-align: center;
   font-size: 1.125rem;
   font-weight: bold;
   outline: none;
   transition: border-color 0.2s ease;
+  
+  background-color: #fff;
 
   &:focus {
     border-color: $color-pink;

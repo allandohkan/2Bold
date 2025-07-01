@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import CPFValidation from '../components/Login/CPFValidation.jsx';
 import PasswordValidation from '../components/Login/PasswordValidation.jsx';
 import SecurityCodeForm from '../components/Login/SecutiryCodeForm.jsx';
+import Modal from '../components/Modal.jsx';
 import { Eye, EyeOff } from 'lucide-react';
-import '../styles/pages/_login.scss'
 import { useAuth } from '../contexts/AuthContext';
 
 import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
 import BemEspecialLogin from '../assets/images/Login_Desktop.png';
 import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
+import FailedIcon from '../assets/images/failed-icon.png';
 
 const BemEspecialLoginComponent = () => {
   const { currentStep, setCurrentStep, autenticarUsuario } = useAuth();
@@ -19,6 +20,7 @@ const BemEspecialLoginComponent = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [modalError, setModalError] = useState({ isOpen: false, message: '' });
 
   const handleCPFAdvance = () => {
     setCurrentStep('password');
@@ -65,10 +67,16 @@ const BemEspecialLoginComponent = () => {
         if (response.success) {
           setCurrentStep('authenticated');
         } else {
-          alert(response.message || 'Credenciais inválidas!');
+          setModalError({
+            isOpen: true,
+            message: response.message || 'CPF ou senha incorreto!'
+          });
         }
       } catch (error) {
-        alert('Erro ao fazer login. Tente novamente.');
+        setModalError({
+          isOpen: true,
+          message: 'Erro ao fazer login. Tente novamente.'
+        });
       }
     } else if (currentStep === 'forgotPassword') {
       handleForgotPassword();
@@ -300,6 +308,15 @@ const BemEspecialLoginComponent = () => {
           )}
         </div>
       </div>
+      
+      {/* Modal de Erro - Apenas para erro de login */}
+      <Modal
+        isOpen={modalError.isOpen}
+        onClose={() => setModalError({ isOpen: false, message: '' })}
+        message={modalError.message}
+        image={FailedIcon}
+        buttonText="Voltar"
+      />
     </div>
   );
 };
