@@ -1,5 +1,5 @@
 // Configurações da API
-const API_BASE_URL = '/api/proxy'; // Forçar uso do proxy
+const API_BASE_URL = 'http://k8s-dclube-producao-17f651f37d-680923557.sa-east-1.elb.amazonaws.com';
 const AUTH_URL = `${API_BASE_URL}/geral/autenticacao`;
 const ACTION_URL = `${API_BASE_URL}/geral/action`;
 
