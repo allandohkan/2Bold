@@ -1,5 +1,5 @@
 // Configurações da API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/proxy';
+const API_BASE_URL = '/api/proxy'; // Forçar uso do proxy
 const AUTH_URL = `${API_BASE_URL}/geral/autenticacao`;
 const ACTION_URL = `${API_BASE_URL}/geral/action`;
 
