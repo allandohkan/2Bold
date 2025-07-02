@@ -62,7 +62,7 @@ const SingleProduct = () => {
           
           if (produtoEncontrado) {
             setProduto(produtoEncontrado);
-            // Atualizar pontos baseado na quantidade selecionada
+            // Definir pontos iniciais baseado na quantidade selecionada
             const pointsKey = `pontos_qtd_${selectedQuantity}`;
             setProductPoints(produtoEncontrado[pointsKey] || produtoEncontrado.pontos_qtd_1 || 0);
           } else {
@@ -94,15 +94,18 @@ const SingleProduct = () => {
 
     fetchProduto();
     fetchUserPoints();
-  }, [nome, user?.idparticipante, listarProdutos, meusPontos, selectedQuantity]);
+  }, [nome, user?.idparticipante, listarProdutos, meusPontos]);
+
+  // Atualizar pontos quando a quantidade mudar (sem recarregar o produto)
+  useEffect(() => {
+    if (produto) {
+      const pointsKey = `pontos_qtd_${selectedQuantity}`;
+      setProductPoints(produto[pointsKey] || produto.pontos_qtd_1 || 0);
+    }
+  }, [selectedQuantity, produto]);
 
   const handleQuantitySelect = (quantity) => {
     setSelectedQuantity(quantity);
-    // Atualizar pontos baseado na quantidade selecionada
-    if (produto) {
-      const pointsKey = `pontos_qtd_${quantity}`;
-      setProductPoints(produto[pointsKey] || 0);
-    }
   };
 
   const handleConfirm = async () => {

@@ -12,7 +12,7 @@ import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png
 import BemEspecialLogin from '../assets/images/Login_Desktop.png';
 import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
 import FailedIcon from '../assets/images/failed-icon.png';
-import SuccessImage from '../assets/images/image 418.png';
+import SuccessImage from '../assets/images/success-icon.png';
 
 const BemEspecialLoginComponent = () => {
   const { currentStep, setCurrentStep, autenticarUsuario, cadastrarSenha, validarCodigo, reenviarCodigo, isFullyAuthenticated } = useAuth();
@@ -225,7 +225,7 @@ const BemEspecialLoginComponent = () => {
                     placeholder="Insira Senha aqui"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         handleAdvance();
                       }
@@ -307,7 +307,7 @@ const BemEspecialLoginComponent = () => {
                   placeholder="Digite seu e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => {
                     if (e.key === 'Enter' && email && !isLoading) {
                       handleForgotPassword();
                     }

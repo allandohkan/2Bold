@@ -7,7 +7,7 @@ import apiService from '../services/apiService';
 
 import BemEspecialLoginDesktopLogo from '../assets/images/Login_Desktop_Logo.png';
 import BemEspecialLoginSenha from '../assets/images/Login_Desktop_Senha.png';
-import SuccessImage from '../assets/images/image 418.png';
+import SuccessImage from '../assets/images/success-icon.png';
 import FailedIcon from '../assets/images/failed-icon.png';
 
 const ResetPasswordPage = () => {
@@ -74,7 +74,7 @@ const ResetPasswordPage = () => {
       if (response.success === 1) {
         setModalConfig({
           isOpen: true,
-          message: 'Senha redefinida com sucesso!\nRedirecionando...',
+          message: 'Senha redefinida com sucesso!',
           isSuccess: true
         });
       } else {
@@ -130,7 +130,7 @@ const ResetPasswordPage = () => {
                   placeholder="Digite seu e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => {
                     if (e.key === 'Enter' && email && !isLoading) {
                       handleEmailSubmit();
                     }
