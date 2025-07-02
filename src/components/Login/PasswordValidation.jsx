@@ -76,9 +76,7 @@ const PasswordValidation = ({
     if (showConfirmation && !confirmPassword) {
       if (onError) {
         onError('Por favor, confirme a senha!');
-      } else {
-        alert('Por favor, confirme a senha!');
-      }
+      } 
       return;
     }
 
