@@ -31,7 +31,7 @@
 .main-nav {
   display: flex;
   align-items: center;
-  gap: vars.$spacing-xl;
+  gap: 1rem;
 }
 
 .nav-button {
@@ -80,18 +80,21 @@
   @include mix.flex-column;
   align-items: center;
   min-width: 110px;
+  max-width: 110px;
 }
 
 .points-label {
   font-size: 0.7rem;
   opacity: 0.9;
   font-weight: vars.$font-weight-normal;
+  white-space: nowrap;
 }
 
 .points-value {
   font-size: vars.$font-size-small;
   font-weight: vars.$font-weight-bold;
   margin-top: 2px;
+  white-space: nowrap;
 }
 
 .exit-button {
@@ -322,6 +325,12 @@
   }
   .header-container{
     padding: 0 1rem;
+  }
+  .points-display{
+    min-width: 130px;
+  }
+  .greeting-text{
+    white-space: nowrap;
   }
 }
 

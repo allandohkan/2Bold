@@ -101,12 +101,8 @@ const BemEspecialLoginComponent = () => {
         // Código validado com sucesso, usuário autenticado
         setCurrentStep('authenticated');
       } else {
-        // Mostrar erro
-        setModalError({
-          isOpen: true,
-          message: response.message || 'Código inválido.'
-        });
-        throw new Error(response.message);
+        // Não mostrar modal, apenas lançar erro para o componente tratar
+        throw new Error(response.message || 'Código inválido.');
       }
     } catch (error) {
       // O componente SecurityCodeForm já lida com o erro
@@ -126,16 +122,12 @@ const BemEspecialLoginComponent = () => {
           message: 'Novo código enviado para seu e-mail!'
         });
       } else {
-        setModalError({
-          isOpen: true,
-          message: response.message || 'Erro ao reenviar código.'
-        });
+        // Não mostrar modal de erro, apenas lançar erro para o componente tratar
+        throw new Error(response.message || 'Erro ao reenviar código.');
       }
     } catch (error) {
-      setModalError({
-        isOpen: true,
-        message: 'Erro ao reenviar código. Tente novamente.'
-      });
+      // Não mostrar modal de erro, apenas lançar erro para o componente tratar
+      throw new Error('Erro ao reenviar código. Tente novamente.');
     }
   };
 
@@ -337,7 +329,8 @@ const BemEspecialLoginComponent = () => {
               setConfirmPassword={setConfirmPassword}
               onAdvance={handlePasswordCreate}
               onBack={() => setCurrentStep('cpf')}
-              title="Para completar seu cadastro, crie uma senha para acessar o sistema. Após criar a senha, enviaremos um código de validação para seu e-mail."
+              title="Notamos que você não cadastrou 
+uma senha para acessar o sistema. Crie uma senha e confirme."
               showConfirmation={true}
             />
           )}

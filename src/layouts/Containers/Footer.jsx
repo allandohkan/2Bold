@@ -35,7 +35,7 @@ const Footer = () => {
           <div className="footer-right">
             <h3 className="footer-title">Contato</h3>
             <ul className="footer-links">
-              <li><Link to="/privacidade">Portal da Privacidade</Link></li>
+              <li><Link to="https://epharma-privacy.my.onetrust.com/webform/0a170943-dff7-4130-9a68-cea0d2a5ad9f/0e24ff4f-400d-414a-a334-6372465cbbd3" target="_blank">Portal da Privacidade</Link></li>
             </ul>
           </div>
         </div>

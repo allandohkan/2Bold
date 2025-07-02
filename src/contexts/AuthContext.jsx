@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import apiService from '../services/apiService';
+import { encryptData, decryptData, clearEncryptedData } from '../utils/encryption';
 
 const AuthContext = createContext();
 
@@ -75,19 +76,28 @@ export const AuthProvider = ({ children }) => {
     
     if (savedUser) {
       try {
-        const userData = JSON.parse(savedUser);
+        // Tentar descriptografar os dados do usuário
+        const userData = decryptData(savedUser);
         const authStatus = savedAuthStatus === 'true';
         
-        // Definir estados de forma síncrona
-        setUser(userData);
-        setIsFullyAuthenticated(authStatus);
-        
-        // Verificar se o usuário está realmente autenticado
-        if (authStatus) {
-          setCurrentStep('authenticated');
+        if (userData) {
+          // Definir estados de forma síncrona
+          setUser(userData);
+          setIsFullyAuthenticated(authStatus);
+          
+          // Verificar se o usuário está realmente autenticado
+          if (authStatus) {
+            setCurrentStep('authenticated');
+          } else {
+            // Se há usuário mas não está totalmente autenticado, vai para CPF primeiro
+            setCurrentStep('cpf');
+          }
         } else {
-          // Se há usuário mas não está totalmente autenticado, vai para CPF primeiro
+          // Dados corrompidos ou inválidos
+          localStorage.removeItem('user');
+          localStorage.removeItem('isFullyAuthenticated');
           setCurrentStep('cpf');
+          setIsFullyAuthenticated(false);
         }
       } catch (error) {
         localStorage.removeItem('user');
@@ -102,10 +112,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, [loading]);
 
-  // SALVAR DADOS DO USUÁRIO NO LOCALSTORAGE
+  // SALVAR DADOS DO USUÁRIO NO LOCALSTORAGE (CRIPTOGRAFADOS)
   useEffect(() => {
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
+      const encryptedUser = encryptData(user);
+      localStorage.setItem('user', encryptedUser);
     } else {
       localStorage.removeItem('user');
     }
@@ -126,10 +137,12 @@ export const AuthProvider = ({ children }) => {
       
       if (savedUser && savedAuthStatus === 'true' && !isFullyAuthenticated) {
         try {
-          const userData = JSON.parse(savedUser);
-          setUser(userData);
-          setIsFullyAuthenticated(true);
-          setCurrentStep('authenticated');
+          const userData = decryptData(savedUser);
+          if (userData) {
+            setUser(userData);
+            setIsFullyAuthenticated(true);
+            setCurrentStep('authenticated');
+          }
         } catch (error) {
           console.error('AuthContext - Erro ao sincronizar estado:', error);
         }
@@ -155,7 +168,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     localStorage.removeItem('isFullyAuthenticated');
 
-    // Limpar cache
+    // Limpar dados de sessão e cache
+    clearEncryptedData();
     clearPointsCache();
 
     // Limpar estados
@@ -177,11 +191,12 @@ export const AuthProvider = ({ children }) => {
     
     if (savedUser && savedAuthStatus === 'true') {
       try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-        setIsFullyAuthenticated(true);
-        setCurrentStep('authenticated');
-
+        const userData = decryptData(savedUser);
+        if (userData) {
+          setUser(userData);
+          setIsFullyAuthenticated(true);
+          setCurrentStep('authenticated');
+        }
       } catch (error) {
         console.error('AuthContext - Erro ao sincronizar estado:', error);
       }

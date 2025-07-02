@@ -65,7 +65,6 @@ const PasswordValidation = ({
     const validation = validatePassword(password);
     
     if (!validation.isValid) {
-      // Em vez de alert, vamos usar uma callback de erro se disponível
       if (onError) {
         onError('Senha não atende aos requisitos mínimos!');
       } else {
@@ -104,7 +103,7 @@ const PasswordValidation = ({
             placeholder="Insira Senha aqui"
             value={password}
             onChange={handlePasswordChange}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="password-input__field"
           />
           <button
@@ -126,7 +125,7 @@ const PasswordValidation = ({
               placeholder="Confirme Senha aqui"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               className="password-input__field"
             />
             <button
