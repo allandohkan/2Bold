@@ -22,10 +22,7 @@ const DEV_MODE = false; // Desativado - requer autenticação
 
 const PrivateRoute = ({ element }) => {
   const { user, loading, isFullyAuthenticated } = useAuth();
-  
-  console.log('🔒 PrivateRoute - user:', user?.idparticipante, 'isFullyAuthenticated:', isFullyAuthenticated);
-  
-  // Se ainda está carregando, mostra loading
+    
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">

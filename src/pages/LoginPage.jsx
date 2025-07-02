@@ -26,6 +26,9 @@ const BemEspecialLoginComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalError, setModalError] = useState({ isOpen: false, message: '' });
   const [modalSuccess, setModalSuccess] = useState({ isOpen: false, message: '' });
+  const [currentBackground, setCurrentBackground] = useState(BemEspecialLogin);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Redirecionar se o usuário estiver autenticado
   useEffect(() => {
@@ -33,6 +36,58 @@ const BemEspecialLoginComponent = () => {
       navigate('/', { replace: true });
     }
   }, [isFullyAuthenticated, navigate]);
+
+  // CURRENT STEP CODE - REENVIAR CÓDIGO AUTOMATICAMENTE
+  useEffect(() => {
+    if (currentStep === 'code') {
+      
+      const autoResendCode = async () => {
+        try {
+          const response = await reenviarCodigo();
+          if (!response.success) {
+            setModalError({
+              isOpen: true,
+              message: response.message || 'Erro ao enviar código. Tente novamente.'
+            });
+          }
+        } catch (error) {
+          setModalError({
+            isOpen: true,
+            message: 'Erro ao enviar código. Tente novamente.'
+          });
+        }
+      };
+      
+      // Executar com um pequeno delay para garantir que a tela já foi renderizada
+      setTimeout(autoResendCode, 500);
+    }
+  }, [currentStep, reenviarCodigo]);
+
+  // TROCA DE BACKGROUND COM TRANSIÇÃO
+  useEffect(() => {
+    const newBackground = getBackgroundImage(currentStep);
+    
+    if (!isInitialized) {
+      setCurrentBackground(newBackground);
+      setIsInitialized(true);
+      return;
+    }
+    
+    if (newBackground !== currentBackground && !isTransitioning) {
+      // Primeiro: iniciar fade-out do background atual
+      setIsTransitioning(true);
+      
+      // Após o fade-out terminar (250ms), trocar o background e iniciar fade-in
+      setTimeout(() => {
+        setCurrentBackground(newBackground);
+        
+        // Após o fade-in terminar (250ms), finalizar a transição
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 0);
+      }, 150);
+    }
+  }, [currentStep, isInitialized]);
 
   const handleCPFAdvance = () => {
     setCurrentStep('password');
@@ -90,6 +145,9 @@ const BemEspecialLoginComponent = () => {
         const response = await autenticarUsuario(password);
         if (response.success) {
           setCurrentStep('authenticated');
+        } else if (response.needsCodeValidation) {
+          // Usuário precisa validar código - não mostrar erro, já foi redirecionado
+          console.log('🔍 LOG LOGIN - Usuário redirecionado para validação de código');
         } else {
           setModalError({
             isOpen: true,
@@ -128,10 +186,8 @@ const BemEspecialLoginComponent = () => {
     }
   };
 
-
+  // RESETAR SENHA VIA API
   const handlePasswordReset = () => {
-    // resetar a senha via API
-    alert('Senha alterada com sucesso! Agora faça login.');
     setCurrentStep('password');
     setPassword('');
     setNewPassword('');
@@ -178,13 +234,17 @@ const BemEspecialLoginComponent = () => {
     }
   };
 
-
-
   return (
-    <div 
-      className="login-container" 
-      style={{ backgroundImage: `url(${getBackgroundImage(currentStep)})` }}
-    >
+    <div className="login-container">
+      {/* Background único com transição */}
+      <div 
+        className={`login-background ${isTransitioning ? 'fade-out' : 'fade-in'}`}
+        style={{ 
+          backgroundImage: `url(${currentBackground})`,
+          zIndex: 2
+        }}
+      />
+      
       <div className="login-overlay">
         <div className="login-card">
           <div className="logo-login-section">
@@ -196,17 +256,12 @@ const BemEspecialLoginComponent = () => {
           </div>
 
           {currentStep === 'cpf' && (
-            <>
-              <CPFValidation 
-                cpf={cpf} 
-                setCpf={setCpf} 
-                onGoToPassword={() => setCurrentStep('password')}
-                onGoToRegisterPassword={() => setCurrentStep('createPassword')}
-              />
-              <div className="form-footer">
-                <button className="link-button">Voltar</button>
-              </div>
-            </>
+            <CPFValidation 
+              cpf={cpf} 
+              setCpf={setCpf} 
+              onGoToPassword={() => setCurrentStep('password')}
+              onGoToRegisterPassword={() => setCurrentStep('createPassword')}
+            />
           )}
 
           {currentStep === 'password' && (
@@ -263,6 +318,15 @@ const BemEspecialLoginComponent = () => {
                   .
                 </p>
               </div>
+
+              <div className="form-footer">
+                <button 
+                  onClick={() => setCurrentStep('cpf')}
+                  className="link-button"
+                >
+                  Voltar
+                </button>
+              </div>
             </div>
           )}
 
@@ -273,6 +337,7 @@ const BemEspecialLoginComponent = () => {
               confirmPassword={confirmPassword}
               setConfirmPassword={setConfirmPassword}
               onAdvance={handlePasswordCreate}
+              onBack={() => setCurrentStep('cpf')}
               title="Para completar seu cadastro, crie uma senha para acessar o sistema. Após criar a senha, enviaremos um código de validação para seu e-mail."
               showConfirmation={true}
             />
@@ -381,7 +446,7 @@ const BemEspecialLoginComponent = () => {
               onAdvance={handleSecurityCodeValidation}
               onResendCode={handleResendSecurityCode}
               onBack={() => setCurrentStep('createPassword')}
-              title="Por medida de segurança, enviamos no seu e-mail um código de 6 dígitos. Por favor, acesse o seu e-mail e insira o código no espaço abaixo."
+              title="Para completar seu acesso, é necessário validar o código enviado para seu e-mail. Por favor, acesse o seu e-mail e insira o código de 6 dígitos no espaço abaixo."
               isLoading={isLoading}
             />
           )}

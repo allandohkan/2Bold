@@ -8,6 +8,7 @@ const PasswordValidation = ({
   setConfirmPassword, 
   onAdvance,
   onError,
+  onBack,
   title = "Notamos que você não cadastrou uma senha para acessar o sistema. Crie uma senha e confirme.",
   showConfirmation = true 
 }) => {
@@ -153,6 +154,17 @@ const PasswordValidation = ({
       >
         AVANÇAR
       </button>
+
+      {onBack && (
+        <div className="form-footer">
+          <button 
+            onClick={onBack}
+            className="link-button"
+          >
+            Voltar
+          </button>
+        </div>
+      )}
 
       <div className="password-requirements">
         <p className="password-requirements__title">A senha deve conter:</p>

@@ -5,13 +5,33 @@
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: $spacing-sm;
+}
+
+.login-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: opacity 0.15s ease-in-out;
+  z-index: 1;
+  
+  &.fade-in {
+    opacity: 1;
+    z-index: 2;
+  }
+  
+  &.fade-out {
+    opacity: 0;
+    z-index: 1;
+  }
 }
 
 .login-overlay {
@@ -25,6 +45,7 @@
   align-items: center;
   justify-content: center;
   padding: $spacing-sm;
+  z-index: 10;
 }
 
 .login-card {

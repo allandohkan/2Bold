@@ -19,7 +19,7 @@ const SingleProduct = () => {
   const [confirming, setConfirming] = useState(false);
   const [voucherCode, setVoucherCode] = useState('');
   
-  const { user, listarProdutos, meusPontos, resgatarVoucher, logout } = useAuth();
+  const { user, listarProdutos, meusPontos, resgatarVoucher, logout, forceRefreshPoints } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -121,6 +121,21 @@ const SingleProduct = () => {
           setIsRedeemed(true);
           // A API retorna o código do voucher em response.data.codigovoucher
           setVoucherCode(response.data.codigovoucher || 'ROCHEVOUCHER10');
+          
+          // Atualizar pontos do usuário imediatamente após resgate bem-sucedido
+          try {
+            // Forçar refresh dos pontos no cache e notificar componentes
+            forceRefreshPoints();
+            
+            // Atualizar pontos locais da página
+            const updatedPointsResponse = await meusPontos(user.idparticipante, true); // forceRefresh = true
+            if (updatedPointsResponse.success && updatedPointsResponse.data) {
+              setUserPoints(updatedPointsResponse.data.saldo || 0);
+            }
+          } catch (error) {
+            console.error('Erro ao atualizar pontos após resgate:', error);
+            // Não mostrar erro para o usuário, pois o resgate foi bem-sucedido
+          }
         } else {
           setError(response.message || 'Erro ao resgatar voucher');
         }

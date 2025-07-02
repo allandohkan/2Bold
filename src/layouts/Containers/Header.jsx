@@ -91,6 +91,45 @@ const Header = ({ onLogout }) => {
     fetchUserPoints();
   }, [user?.idparticipante, currentStep]); // Removido meusPontos das dependências
 
+  // Listener para atualizações de pontos via evento customizado
+  useEffect(() => {
+    const handlePointsUpdate = () => {
+      if (user?.idparticipante && currentStep === 'authenticated') {
+        console.log('🔍 LOG HEADER - Evento de atualização de pontos recebido');
+        // Resetar flags para permitir nova busca
+        isExecuting.current = false;
+        hasFetchedPoints.current = false;
+        lastFetchedUserId.current = null;
+        
+        // Buscar pontos atualizados
+        const fetchUpdatedPoints = async () => {
+          setLoadingPoints(true);
+          try {
+            const result = await consultarSaldo(user.idparticipante);
+            if (result.success) {
+              const pontos = result.data.saldo;
+              setUserPoints(pontos);
+              console.log('🔍 LOG HEADER - Pontos atualizados no header:', pontos);
+            }
+          } catch (error) {
+            console.error('Erro ao atualizar pontos no header:', error);
+          } finally {
+            setLoadingPoints(false);
+          }
+        };
+        
+        fetchUpdatedPoints();
+      }
+    };
+
+    // Escutar evento de atualização de pontos
+    window.addEventListener('pointsUpdated', handlePointsUpdate);
+
+    return () => {
+      window.removeEventListener('pointsUpdated', handlePointsUpdate);
+    };
+  }, [user?.idparticipante, currentStep, consultarSaldo]);
+
   const handleLogout = () => {
     if (onLogout) {
       onLogout();

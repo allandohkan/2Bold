@@ -1,13 +1,22 @@
 // Configurações da API
-const API_BASE_URL = 'http://k8s-dclube-producao-17f651f37d-680923557.sa-east-1.elb.amazonaws.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const AUTH_URL = `${API_BASE_URL}/geral/autenticacao`;
 const ACTION_URL = `${API_BASE_URL}/geral/action`;
 
 // Credenciais de autenticação
 const API_CREDENTIALS = {
-  email: 'epharma@zicard.com.br',
-  senha: 'Zrd@9032!8*'
+  email: import.meta.env.VITE_API_EMAIL,
+  senha: import.meta.env.VITE_API_PASSWORD
 };
+
+// Validar se as variáveis de ambiente estão configuradas
+if (!API_CREDENTIALS.email || !API_CREDENTIALS.senha) {
+  throw new Error('Variáveis de ambiente VITE_API_EMAIL e VITE_API_PASSWORD devem estar configuradas no arquivo .env');
+}
+
+if (!API_BASE_URL) {
+  throw new Error('Variável de ambiente VITE_API_BASE_URL deve estar configurada no arquivo .env');
+}
 
 class ApiService {
   constructor() {
@@ -141,8 +150,10 @@ class ApiService {
       this.useAuth = true;
       
       const result = await this.makeRequest('ConsultarCPF', { cpf });
+          
       return result;
     } catch (error) {
+      console.error('🔍 LOG API - Erro em ConsultarCPF:', error);
       throw error;
     }
   }
@@ -211,6 +222,8 @@ class ApiService {
       const result = await this.makeRequest('ReenviarCodigo', {
         idparticipante
       });
+      
+      
       return result;
     } catch (error) {
       throw error;
