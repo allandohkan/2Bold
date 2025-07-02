@@ -15,11 +15,11 @@ const Footer = () => {
               <p>direitos reservados epharma.</p>
             </div>
             
-            <button className="footer-icon-button">
+            {/* <button className="footer-icon-button cookie-button">
               <div className="icon-circle">
                 <img src={iconColor} alt="icon" className="icon" />
               </div>
-            </button> 
+            </button> */}
 
           </div>
 
