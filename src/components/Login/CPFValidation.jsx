@@ -102,7 +102,7 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
   };
 
   return (
-    <div className="form-section">
+    <div className="form-section" role="main">
       <div className="form-description">
         <p>
           Insira o CPF cadastrado<br />
@@ -110,7 +110,11 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
         </p>
       </div>
 
-      <div className="input-group">
+      <fieldset className="input-group">
+        <legend className="sr-only">Dados de acesso</legend>
+        <label htmlFor="cpf-input" className="sr-only">
+          CPF
+        </label>
         <input
           type="text"
           id="cpf-input"
@@ -121,17 +125,21 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
           onKeyPress={handleKeyPress}
           className="input-field"
           disabled={isLoading}
+          aria-describedby={apiMessage ? "cpf-error" : undefined}
+          aria-invalid={isError}
+          aria-required="true"
         />
-      </div>
+      </fieldset>
       <button
         onClick={handleSubmit}
         disabled={cpf.length !== 14 || isLoading}
         className="btn-primary"
+        aria-describedby={isLoading ? "loading-status" : undefined}
       >
         {isLoading ? 'VERIFICANDO...' : 'AVANÇAR'}
       </button>
       {isLoading && (
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '12px 0' }}>
+        <div id="loading-status" style={{ display: 'flex', justifyContent: 'center', margin: '12px 0' }} aria-live="polite">
           <div style={{
             border: '4px solid #f3f3f3',
             borderTop: '4px solid #ea4ea1',
@@ -139,7 +147,8 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
             width: 32,
             height: 32,
             animation: 'spin 1s linear infinite'
-          }} />
+          }} aria-hidden="true" />
+          <span className="sr-only">Verificando CPF...</span>
           <style>{`
             @keyframes spin {
               0% { transform: rotate(0deg); }
@@ -150,7 +159,7 @@ const CPFValidation = ({ cpf, setCpf, onAdvance, onGoToPassword, onGoToRegisterP
       )}
 
       {apiMessage && (
-        <div className={isError ? 'error-message' : ''}>
+        <div id="cpf-error" className={isError ? 'error-message' : ''} role="alert" aria-live="polite">
           {apiMessage}
         </div>
       )}

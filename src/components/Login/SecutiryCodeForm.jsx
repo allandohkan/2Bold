@@ -116,12 +116,16 @@ const SecurityCodeForm = ({
   const isCodeComplete = securityCode.every(digit => digit);
 
   return (
-    <div className="form-section">
+    <div className="form-section" role="main">
       <div className="form-description">
         <p>{title}</p>
       </div>
 
-      <div className="security-code-container">
+      <fieldset className="security-code-container">
+        <legend className="sr-only">Código de validação</legend>
+        <label htmlFor="code-0" className="sr-only">
+          Código de validação de 6 dígitos
+        </label>
         {securityCode.map((digit, index) => (
           <input
             key={index}
@@ -136,12 +140,16 @@ const SecurityCodeForm = ({
             onPaste={index === 0 ? handlePaste : undefined}
             className={`security-code-input ${error ? 'error' : ''}`}
             disabled={isLoading}
+            aria-describedby={error ? "code-error" : undefined}
+            aria-invalid={!!error}
+            aria-required="true"
+            aria-label={`Dígito ${index + 1} do código`}
           />
         ))}
-      </div>
+      </fieldset>
 
       {error && (
-        <div className="error-message">
+        <div id="code-error" className="error-message" role="alert" aria-live="polite">
           <p>{error}</p>
         </div>
       )}

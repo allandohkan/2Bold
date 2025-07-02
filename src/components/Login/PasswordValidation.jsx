@@ -89,13 +89,17 @@ const PasswordValidation = ({
   const isFormValid = validation.isValid && (!showConfirmation || password === confirmPassword);
 
   return (
-    <div className="password-validation">
+    <div className="password-validation" role="main">
       <div className="password-validation__description">
         <p>{title}</p>
       </div>
 
-      <div className="password-validation__inputs">
+      <fieldset className="password-validation__inputs">
+        <legend className="sr-only">Criação de senha</legend>
         <div className="password-input">
+          <label htmlFor="password-input" className="sr-only">
+            Senha
+          </label>
           <input
             type={showPassword ? "text" : "password"}
             id="password-input"
@@ -105,12 +109,16 @@ const PasswordValidation = ({
             onChange={handlePasswordChange}
             onKeyDown={handleKeyPress}
             className="password-input__field"
+            aria-describedby={errors.length > 0 ? "password-errors" : undefined}
+            aria-invalid={errors.length > 0}
+            aria-required="true"
           />
           <button
             type="button"
             tabIndex="-1"
             onClick={() => setShowPassword(!showPassword)}
             className="password-input__toggle"
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -118,6 +126,9 @@ const PasswordValidation = ({
         
         {showConfirmation && (
           <div className="password-input">
+            <label htmlFor="confirm-password-input" className="sr-only">
+              Confirmar senha
+            </label>
             <input
               type={showConfirmPassword ? "text" : "password"}
               id="confirm-password-input"
@@ -127,22 +138,32 @@ const PasswordValidation = ({
               onChange={handleConfirmPasswordChange}
               onKeyDown={handleKeyPress}
               className="password-input__field"
+              aria-describedby={confirmPassword && password !== confirmPassword ? "password-mismatch" : undefined}
+              aria-invalid={confirmPassword && password !== confirmPassword}
+              aria-required="true"
             />
             <button
               type="button"
               tabIndex="-1"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="password-input__toggle"
+              aria-label={showConfirmPassword ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"}
             >
               {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
         )}
-      </div>
+      </fieldset>
 
       {showConfirmation && confirmPassword && password !== confirmPassword && (
-        <div className="password-validation__error">
+        <div id="password-mismatch" className="password-validation__error" role="alert" aria-live="polite">
           <p>As senhas não coincidem</p>
+        </div>
+      )}
+
+      {errors.length > 0 && (
+        <div id="password-errors" className="password-validation__error" role="alert" aria-live="polite">
+          <p>Senha não atende aos requisitos mínimos</p>
         </div>
       )}
 

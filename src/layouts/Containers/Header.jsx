@@ -177,12 +177,12 @@ const Header = ({ onLogout }) => {
   };
 
   return (
-    <header className="bem-especial-header">
+    <header className="bem-especial-header" role="banner">
       <div className="header-container">
         <div className="header-content">
           <div className="logo-section">
-            <Link to="/" >
-              <img src={logoIcon} alt="Bem Especial" className="logo-icon" />
+            <Link to="/" aria-label="Ir para página inicial">
+              <img src={logoIcon} alt="Logo Bem Especial" className="logo-icon" />
             </Link>
           </div>
 
@@ -203,10 +203,10 @@ const Header = ({ onLogout }) => {
           </div>
 
           {/* DESKTOP: Navegação e user-section */}
-          <nav className="main-nav">
-            <Link to="/meus-pontos" className={`nav-button ${isActive('/meus-pontos') ? 'active' : ''}`}>Meus Pontos</Link>
-            <Link to="/resgatar" className={`nav-button ${isActive('/resgatar') ? 'active' : ''}`}>Quero Resgatar</Link>
-            <Link to="/vouchers" className={`nav-button ${isActive('/vouchers') ? 'active' : ''}`}>Meus Vouchers</Link>
+          <nav className="main-nav" role="navigation" aria-label="Navegação principal">
+            <Link to="/meus-pontos" className={`nav-button ${isActive('/meus-pontos') ? 'active' : ''}`} aria-current={isActive('/meus-pontos') ? 'page' : undefined}>Meus Pontos</Link>
+            <Link to="/resgatar" className={`nav-button ${isActive('/resgatar') ? 'active' : ''}`} aria-current={isActive('/resgatar') ? 'page' : undefined}>Quero Resgatar</Link>
+            <Link to="/vouchers" className={`nav-button ${isActive('/vouchers') ? 'active' : ''}`} aria-current={isActive('/vouchers') ? 'page' : undefined}>Meus Vouchers</Link>
           </nav>
           <div className="user-section">
             <div className="user-greeting">
@@ -218,17 +218,17 @@ const Header = ({ onLogout }) => {
                 {loadingPoints ? 'Carregando...' : userPoints ? `${formatPoints(userPoints)} pts` : '0 pts'}
               </div>
             </div>
-            <button className="exit-button" onClick={handleLogout}>Sair</button>
+            <button className="exit-button" onClick={handleLogout} aria-label="Sair da conta">Sair</button>
           </div>
 
           {/* MOBILE DRAWER */}
-          <div className={`mobile-drawer ${menuOpen ? 'open' : ''}`}>
+          <div className={`mobile-drawer ${menuOpen ? 'open' : ''}`} role="dialog" aria-modal="true" aria-label="Menu de navegação">
             <button className="close-drawer" onClick={() => setMenuOpen(false)} aria-label="Fechar menu">×</button>
-            <nav className="drawer-nav">
-              <Link to="/meus-pontos" className={`nav-button ${isActive('/meus-pontos') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Meus Pontos</Link>
-              <Link to="/resgatar" className={`nav-button ${isActive('/resgatar') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Quero Resgatar</Link>
-              <Link to="/vouchers" className={`nav-button ${isActive('/vouchers') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Meus Vouchers</Link>
-              <button className="exit-button" onClick={() => { setMenuOpen(false); handleLogout(); }}>Sair</button>
+            <nav className="drawer-nav" role="navigation" aria-label="Menu de navegação">
+              <Link to="/meus-pontos" className={`nav-button ${isActive('/meus-pontos') ? 'active' : ''}`} onClick={() => setMenuOpen(false)} aria-current={isActive('/meus-pontos') ? 'page' : undefined}>Meus Pontos</Link>
+              <Link to="/resgatar" className={`nav-button ${isActive('/resgatar') ? 'active' : ''}`} onClick={() => setMenuOpen(false)} aria-current={isActive('/resgatar') ? 'page' : undefined}>Quero Resgatar</Link>
+              <Link to="/vouchers" className={`nav-button ${isActive('/vouchers') ? 'active' : ''}`} onClick={() => setMenuOpen(false)} aria-current={isActive('/vouchers') ? 'page' : undefined}>Meus Vouchers</Link>
+              <button className="exit-button" onClick={() => { setMenuOpen(false); handleLogout(); }} aria-label="Sair da conta">Sair</button>
             </nav>
           </div>
           {/* Overlay para fechar drawer ao clicar fora */}

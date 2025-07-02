@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/src/assets/icons/favicon.ico" />
@@ -10,10 +10,28 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/src/assets/icons/android-chrome-512x512.png" />
     <link rel="manifest" href="/src/assets/icons/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EPharma</title>
+    <title>Bem Especial - Programa de Pontos</title>
+    <meta name="description" content="Programa de pontos Bem Especial. Resgate benefícios e acompanhe seus pontos." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Skip link functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const skipLink = document.getElementById('skip-link');
+        if (skipLink) {
+          skipLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const mainContent = document.querySelector('main') || document.querySelector('.main-content');
+            if (mainContent) {
+              mainContent.focus();
+              mainContent.scrollIntoView();
+            }
+          });
+        }
+      });
+    </script>
   </body>
 </html>
