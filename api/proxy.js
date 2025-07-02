@@ -1,5 +1,4 @@
 import http from 'http';
-import https from 'https';
 
 export default async function handler(req, res) {
   // Configurar CORS
@@ -16,30 +15,52 @@ export default async function handler(req, res) {
   const targetHost = 'k8s-dclube-producao-17f651f37d-680923557.sa-east-1.elb.amazonaws.com';
   const targetPath = req.url.replace('/api/proxy', '');
   
+  console.log(`Proxying request to: ${targetHost}${targetPath}`);
+  
   const options = {
     hostname: targetHost,
     port: 80,
     path: targetPath,
     method: req.method,
     headers: {
-      ...req.headers,
-      host: targetHost
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'User-Agent': 'Vercel-Proxy'
     }
   };
 
-  const proxyReq = http.request(options, (proxyRes) => {
-    res.writeHead(proxyRes.statusCode, proxyRes.headers);
-    proxyRes.pipe(res);
+  // Se há body na requisição, vamos lê-lo
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
   });
 
-  proxyReq.on('error', (err) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ error: 'Proxy error', details: err.message });
-  });
+  req.on('end', () => {
+    const proxyReq = http.request(options, (proxyRes) => {
+      let responseBody = '';
+      
+      proxyRes.on('data', chunk => {
+        responseBody += chunk;
+      });
+      
+      proxyRes.on('end', () => {
+        res.writeHead(proxyRes.statusCode, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        });
+        res.end(responseBody);
+      });
+    });
 
-  if (req.body) {
-    proxyReq.write(JSON.stringify(req.body));
-  }
-  
-  proxyReq.end();
+    proxyReq.on('error', (err) => {
+      console.error('Proxy error:', err);
+      res.status(500).json({ error: 'Proxy error', details: err.message });
+    });
+
+    if (body) {
+      proxyReq.write(body);
+    }
+    
+    proxyReq.end();
+  });
 } 

@@ -3,6 +3,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/proxy';
 const AUTH_URL = `${API_BASE_URL}/geral/autenticacao`;
 const ACTION_URL = `${API_BASE_URL}/geral/action`;
 
+console.log('🔧 API Base URL:', API_BASE_URL);
+console.log('🔧 Auth URL:', AUTH_URL);
+console('🔧 Action URL:', ACTION_URL);
+
 // Credenciais de autenticação
 const API_CREDENTIALS = {
   email: import.meta.env.VITE_API_EMAIL,
