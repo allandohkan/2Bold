@@ -147,7 +147,6 @@ const BemEspecialLoginComponent = () => {
           setCurrentStep('authenticated');
         } else if (response.needsCodeValidation) {
           // Usuário precisa validar código - não mostrar erro, já foi redirecionado
-          console.log('🔍 LOG LOGIN - Usuário redirecionado para validação de código');
         } else {
           setModalError({
             isOpen: true,

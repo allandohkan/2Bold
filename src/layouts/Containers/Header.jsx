@@ -95,7 +95,6 @@ const Header = ({ onLogout }) => {
   useEffect(() => {
     const handlePointsUpdate = () => {
       if (user?.idparticipante && currentStep === 'authenticated') {
-        console.log('🔍 LOG HEADER - Evento de atualização de pontos recebido');
         // Resetar flags para permitir nova busca
         isExecuting.current = false;
         hasFetchedPoints.current = false;
@@ -109,7 +108,6 @@ const Header = ({ onLogout }) => {
             if (result.success) {
               const pontos = result.data.saldo;
               setUserPoints(pontos);
-              console.log('🔍 LOG HEADER - Pontos atualizados no header:', pontos);
             }
           } catch (error) {
             console.error('Erro ao atualizar pontos no header:', error);

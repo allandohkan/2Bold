@@ -69,7 +69,7 @@ const PasswordValidation = ({
       if (onError) {
         onError('Senha não atende aos requisitos mínimos!');
       } else {
-        alert('Senha não atende aos requisitos mínimos!');
+        
       }
       return;
     }

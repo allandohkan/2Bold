@@ -18,8 +18,6 @@ import './App.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-const DEV_MODE = false; // Desativado - requer autenticação
-
 const PrivateRoute = ({ element }) => {
   const { user, loading, isFullyAuthenticated } = useAuth();
     
@@ -35,8 +33,8 @@ const PrivateRoute = ({ element }) => {
   // Verificação de autenticação completa - usuário deve estar totalmente autenticado
   const isAuthenticated = user && user.idparticipante && isFullyAuthenticated;
   
-  // Se está no modo DEV ou se o usuário está autenticado
-  if (DEV_MODE || isAuthenticated) {
+  // Se o usuário está autenticado
+  if (isAuthenticated) {
     return element;
   }
   
@@ -44,7 +42,7 @@ const PrivateRoute = ({ element }) => {
 };
 
 const AppRoutes = () => {
-  const { user, logout, isFullyAuthenticated, debugAuthState, syncAuthState } = useAuth();
+  const { user, logout, isFullyAuthenticated } = useAuth();
   const isAuthenticated = user && user.idparticipante && isFullyAuthenticated;
 
   const handleLogout = () => {
