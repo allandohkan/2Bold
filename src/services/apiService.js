@@ -5,7 +5,7 @@ const ACTION_URL = `${API_BASE_URL}/geral/action`;
 
 console.log('🔧 API Base URL:', API_BASE_URL);
 console.log('🔧 Auth URL:', AUTH_URL);
-console('🔧 Action URL:', ACTION_URL);
+console.log('🔧 Action URL:', ACTION_URL);
 
 // Credenciais de autenticação
 const API_CREDENTIALS = {
