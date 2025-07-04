@@ -3,10 +3,6 @@ const API_BASE_URL = 'http://k8s-dclube-producao-17f651f37d-680923557.sa-east-1.
 const AUTH_URL = `${API_BASE_URL}/geral/autenticacao`;
 const ACTION_URL = `${API_BASE_URL}/geral/action`;
 
-console.log('🔧 API Base URL:', API_BASE_URL);
-console.log('🔧 Auth URL:', AUTH_URL);
-console.log('🔧 Action URL:', ACTION_URL);
-
 // Credenciais de autenticação
 const API_CREDENTIALS = {
   email: import.meta.env.VITE_API_EMAIL,

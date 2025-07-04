@@ -109,9 +109,9 @@ const Header = ({ onLogout }) => {
               const pontos = result.data.saldo;
               setUserPoints(pontos);
             }
-          } catch (error) {
-            console.error('Erro ao atualizar pontos no header:', error);
-          } finally {
+                                     } catch (error) {
+          console.error('Erro ao atualizar pontos no header:', error);
+        } finally {
             setLoadingPoints(false);
           }
         };

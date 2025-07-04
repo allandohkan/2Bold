@@ -49,9 +49,9 @@ const ProductListPage = () => {
             } else {
                 setError(response.message || 'Erro ao carregar produtos');
             }
-        } catch (error) {
-            console.error("Erro ao buscar produtos:", error);
-            setError('Erro de comunicação. Tente novamente.');
+                } catch (error) {
+          console.error("Erro ao buscar produtos:", error);
+          setError('Erro de comunicação. Tente novamente.');
         } finally {
             setLoading(false);
         }

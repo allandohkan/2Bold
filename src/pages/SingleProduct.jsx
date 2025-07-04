@@ -224,29 +224,38 @@ const SingleProduct = () => {
             <div className='sku'>SKU: {produto.sku}</div>
             
             {/* Botões de quantidade */}
-            <div className="quantity-selector">
-              <h3>Escolha a quantidade:</h3>
-              <div className="quantity-buttons">
-                <button 
-                  className={`quantity-btn ${selectedQuantity === 1 ? 'active' : ''}`}
-                  onClick={() => handleQuantitySelect(1)}
-                >
-                  1 Unidade
-                </button>
-                <button 
-                  className={`quantity-btn ${selectedQuantity === 2 ? 'active' : ''}`}
-                  onClick={() => handleQuantitySelect(2)}
-                >
-                  2 Unidades
-                </button>
-                <button 
-                  className={`quantity-btn ${selectedQuantity === 3 ? 'active' : ''}`}
-                  onClick={() => handleQuantitySelect(3)}
-                >
-                  3 Unidades
-                </button>
+            {!isRedeemed ? (
+              <div className="quantity-selector">
+                <h3>Escolha a quantidade:</h3>
+                <div className="quantity-buttons">
+                  <button 
+                    className={`quantity-btn ${selectedQuantity === 1 ? 'active' : ''}`}
+                    onClick={() => handleQuantitySelect(1)}
+                  >
+                    1 Unidade
+                  </button>
+                  <button 
+                    className={`quantity-btn ${selectedQuantity === 2 ? 'active' : ''}`}
+                    onClick={() => handleQuantitySelect(2)}
+                  >
+                    2 Unidades
+                  </button>
+                  <button 
+                    className={`quantity-btn ${selectedQuantity === 3 ? 'active' : ''}`}
+                    onClick={() => handleQuantitySelect(3)}
+                  >
+                    3 Unidades
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="redeemed-quantity">
+                <h3>Quantidade Resgatada:</h3>
+                <div className="redeemed-message">
+                  Você resgatou {selectedQuantity} {selectedQuantity === 1 ? 'unidade' : 'unidades'}
+                </div>
+              </div>
+            )}
             
             {!isRedeemed && (
               <div className="action-buttons">
@@ -349,6 +358,29 @@ const SingleProduct = () => {
           transform: translateY(-2px);
         }
         
+        .redeemed-quantity {
+          margin: 20px 0;
+        }
+        
+        .redeemed-quantity h3 {
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 12px;
+        }
+        
+        .redeemed-message {
+          padding: 16px 20px;
+          background: #f8f9fa;
+          border: 2px solid #8D4B91;
+          border-radius: 8px;
+          color: #8D4B91;
+          font-size: 16px;
+          font-weight: 600;
+          text-align: center;
+          min-width: 200px;
+        }
+        
         @media (max-width: 768px) {
           .quantity-buttons {
             flex-direction: column;
@@ -356,6 +388,11 @@ const SingleProduct = () => {
           }
           
           .quantity-btn {
+            min-width: auto;
+            width: 100%;
+          }
+          
+          .redeemed-message {
             min-width: auto;
             width: 100%;
           }

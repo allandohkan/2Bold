@@ -17,19 +17,20 @@ Documentação completa do sistema de paginação genérico implementado no proj
 - `src/components/Pagination.jsx`
 - `src/hooks/usePagination.js`
 
-### 🔐 [Redefinição de Senha](./REDEFINICAO_SENHA.md)
-Documentação da funcionalidade de redefinição de senha.
+### 🔐 [AuthContext - Gerenciamento de Estado](./AUTHCONTEXT_USAGE.md)
+Documentação completa do sistema de autenticação e gerenciamento de estado.
 
 **Conteúdo:**
-- Fluxo completo de redefinição
-- URLs e endpoints da API
-- Requisitos de segurança
-- Integração com e-mail
+- Fluxo de autenticação multi-etapa
+- Gerenciamento de estado global
+- Cache de pontos e sincronização
+- Persistência criptografada
+- Troubleshooting e uso prático
 
 **Arquivos relacionados:**
-- `src/pages/ResetPasswordPage.jsx`
-- `src/components/Login/SecurityCodeForm.jsx`
-- `src/components/Login/PasswordValidation.jsx`
+- `src/contexts/AuthContext.jsx`
+- `src/utils/encryption.js`
+- `src/services/apiService.js`
 
 ## 🏗️ Estrutura do Projeto
 
@@ -45,30 +46,12 @@ Documentação da funcionalidade de redefinição de senha.
 ├── documentation/          # 📁 Documentação técnica
 │   ├── README.md           # Este arquivo
 │   ├── PAGINATION_USAGE.md # Sistema de paginação
-│   └── REDEFINICAO_SENHA.md # Redefinição de senha
+│   └── AUTHCONTEXT_USAGE.md # AuthContext e gerenciamento de estado
 └── README.md               # README principal do projeto
 ```
-
-## 📝 Como Contribuir com a Documentação
-
-1. **Criar novo documento**: Adicione arquivos `.md` nesta pasta
-2. **Atualizar documentação**: Mantenha os documentos sincronizados com o código
-3. **Organização**: Use nomes descritivos e estrutura clara
-4. **Exemplos**: Sempre inclua exemplos práticos de uso
 
 ## 🔍 Encontrando Documentação
 
 - **Funcionalidades**: Procure pelo nome da funcionalidade
 - **Componentes**: Verifique se há documentação específica
 - **APIs**: Consulte a documentação de serviços relacionados
-
-## 📞 Suporte
-
-Para dúvidas sobre a documentação ou implementação:
-- Verifique os exemplos nos documentos
-- Consulte os arquivos de código relacionados
-- Revise a estrutura do projeto
-
----
-
-*Última atualização: Janeiro 2025* 

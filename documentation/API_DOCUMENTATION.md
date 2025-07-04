@@ -4,8 +4,8 @@ Métodos:
 •	Autenticação para uso dos métodos:
 para obter o token exigido para executar os endpoints abaixo é necessário fazer uma autenticação no API gateway da Zicard.
 url: 	http://k8s-dclube-producao-17f651f37d-680923557.sa-east-1.elb.amazonaws.com/geral/autenticacao
-login:	epharma@zicard.com.br
-Senha: Zrd@9032!8*
+login: ---
+Senha: ---
 	Esse endpoint retornará um token que deverá ser utilizado no header dos outros endpoints, como Authorization Bearer ....
 
 Endpoints para uso no hotsite:

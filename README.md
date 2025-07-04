@@ -2,6 +2,27 @@
 
 Sistema de login e gerenciamento de pontos para o programa Bem Especial.
 
+## 📚 Documentação
+
+### **📖 [Documentação Completa](./documentation/README.md)**
+Documentação técnica detalhada do projeto, incluindo:
+- Sistema de paginação
+- Estrutura do projeto
+- Como contribuir
+
+### **🔄 [Sistema de Paginação](./documentation/PAGINATION_USAGE.md)**
+Documentação completa do sistema de paginação genérico:
+- Componente `Pagination` reutilizável
+- Hook `usePagination` para gerenciar lógica
+- Exemplos de uso práticos
+
+### **🔐 [AuthContext - Gerenciamento de Estado](./documentation/AUTHCONTEXT_USAGE.md)**
+Guia completo sobre o sistema de autenticação:
+- Fluxo de autenticação multi-etapa
+- Gerenciamento de estado global
+- Cache de pontos e sincronização
+- Persistência criptografada
+
 ## 🚀 Deploy
 
 ### **GitHub Pages:**

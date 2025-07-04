@@ -143,9 +143,9 @@ export const AuthProvider = ({ children }) => {
             setIsFullyAuthenticated(true);
             setCurrentStep('authenticated');
           }
-        } catch (error) {
-          console.error('AuthContext - Erro ao sincronizar estado:', error);
-        }
+              } catch (error) {
+        console.error('AuthContext - Erro ao sincronizar estado:', error);
+      }
       }
     };
 

@@ -8,7 +8,7 @@ const SecurityCodeForm = ({
   isLoading = false 
 }) => {
   const [securityCode, setSecurityCode] = useState(['', '', '', '', '', '']);
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [timeLeft, setTimeLeft] = useState(120);
   const [canResend, setCanResend] = useState(false);
   const [error, setError] = useState('');
 
@@ -100,7 +100,7 @@ const SecurityCodeForm = ({
         await onResendCode();
       }
 
-      setTimeLeft(300);
+      setTimeLeft(120);
       setCanResend(false);
       setSecurityCode(['', '', '', '', '', '']);
       setError('');

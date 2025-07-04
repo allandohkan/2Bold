@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon-CcvMvlAK.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16-9vli-Arf.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32-CJE2teNo.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon-BT8AKqJL.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-chrome-192x192-BR4Vt3Sn.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/android-chrome-512x512-DEnbsxKi.png" />
+    <link rel="manifest" href="/assets/site-DUwm7x3u.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bem Especial - Programa de Pontos</title>
+    <meta name="description" content="Programa de pontos Bem Especial. Resgate benefícios e acompanhe seus pontos." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" crossorigin src="/assets/index-RVww6yjy.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-B4dclrP-.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Skip link functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const skipLink = document.getElementById('skip-link');
+        if (skipLink) {
+          skipLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const mainContent = document.querySelector('main') || document.querySelector('.main-content');
+            if (mainContent) {
+              mainContent.focus();
+              mainContent.scrollIntoView();
+            }
+          });
+        }
+      });
+
+      // Single Page Apps for GitHub Pages
+      // MIT License
+      // https://github.com/rafgraph/spa-github-pages
+      // This script checks to see if a redirect is present in the query string,
+      // converts it back into the correct url and adds it to the
+      // browser's history using window.history.replaceState(...),
+      // which won't cause the browser to attempt to load the new url.
+      // When the single page app is loaded further down in this file,
+      // the correct url will be waiting in the browser's history for
+      // the single page app to route accordingly.
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+  </body>
+</html>
